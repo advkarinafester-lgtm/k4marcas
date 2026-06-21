@@ -424,30 +424,48 @@ Duas opções, dependendo do quanto você quer sair do Google Sheets:
 - Vantagem: escala, permissões reais, auditoria, automações mais robustas.
 - Desvantagem: custo e tempo de desenvolvimento maiores.
 
-**Recomendação**: começar pela Opção A (consolidação no Sheets) para
-unificar os dados já existentes sem fricção, e migrar para a Opção B depois
+**Decisão confirmada**: seguir pela Opção A (consolidação no Sheets/Apps
+Script) na v1. A Opção B fica como evolução futura, se necessário, depois
 que o modelo de campos estiver validado em uso real.
 
-## 8. Próximos passos
+## 8. Decisões tomadas (v1)
+
+Você confirmou que a v1 já deve incluir:
+
+1. **Oposição e Nulidade**: separar a notificação ao cliente em duas datas
+   distintas — e-mail e WhatsApp (hoje é um único campo "Contato").
+2. **Oposição**: separar a coluna única "Marca oponente / Nº processo" em
+   dois campos — marca oponente e número do processo do oponente.
+3. **Oposição e Nulidade**: adicionar o campo "Número do protocolo da
+   manifestação/recurso" (hoje só existe a data do protocolo).
+4. **Indeferimento**: padronizar "Estratégia de solução" como lista fixa
+   das 7 opções definidas, **com uma opção adicional "Outro" de texto
+   livre** para casos que não se encaixem nas opções padrão.
+5. **Exigência**: padronizar "Tipo de exigência" como lista fixa das 5
+   opções definidas, **também com opção "Outro" de texto livre**.
+6. **Arquitetura**: seguir pela **Opção A — consolidação no Google
+   Sheets/Apps Script** (não app web dedicado, por ora).
+
+Esses pontos atualizam os esqueletos das seções 5.1, 5.2, 5.3 e 5.4: cada
+campo de "Estratégia"/"Tipo de exigência" passa a ser
+`lista fixa + campo "Outro" (texto livre)`, em vez de texto livre puro ou
+lista fechada sem fallback.
+
+## 9. Próximos passos
 
 1. ~~Mapear os campos reais de Desenho Industrial, Patente e Monitoramento~~
    — concluído com a análise dos dois arquivos enviados (seções 4.6, 4.7 e
    6).
-2. Validar com você os campos que identifiquei como **faltantes** frente
-   ao que você descreveu (datas separadas de notificação por e-mail/
-   WhatsApp na Oposição/Nulidade, oponente em colunas separadas, número de
-   protocolo da manifestação) e decidir se entram já na primeira versão do
-   sistema ou ficam para uma segunda etapa.
-3. Padronizar como listas fixas os campos que hoje são texto livre:
-   "Estratégia de solução" (Indeferimento) e "Tipo de exigência"
-   (Exigência).
+2. ~~Decidir quais lacunas entram na v1~~ — concluído, ver seção 8.
+3. ~~Decidir a arquitetura~~ — concluído: Opção A (Sheets/Apps Script).
 4. Definir a chave de vinculação entre o processo de registro e seus
    submódulos de fase — recomendo usar o **número do processo** como
    identificador único, já que é o campo presente em todas as abas.
-5. Definir a opção de arquitetura (A — Sheets/Apps Script, ou B — app web
-   dedicado).
-6. Implementar a consolidação/migração dos dados reais das duas planilhas
-   analisadas.
-7. Implementar alertas de prazo (oposição, exigência, indeferimento,
-   nulidade) com base nos campos "Prazo escritório" e "Prazo INPI" já
-   existentes.
+5. Desenhar a planilha consolidada (abas + colunas finais, incluindo os 6
+   ajustes da seção 8) e o roteiro do Apps Script (validações, alertas de
+   prazo a partir de "Prazo escritório"/"Prazo INPI", e o dropdown com
+   "Outro" para Estratégia/Tipo de exigência).
+6. Migrar os dados reais das duas planilhas analisadas para a planilha
+   consolidada.
+7. Implementar os alertas automáticos de prazo (oposição, exigência,
+   indeferimento, nulidade).
