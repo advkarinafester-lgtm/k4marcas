@@ -911,14 +911,33 @@ Pontos importantes desse desenho:
   despachos encontrados, falhas) em uma aba de log simples, para
   diagnóstico caso algo pare de funcionar.
 
-### 12.4 O que falta para implementar de fato
+### 12.4 Implementação real
 
-1. Eu preciso de acesso de edição à planilha (ou você cria a estrutura de
-   abas da seção 11 e me dá acesso) para escrever o código dentro do
-   editor de Apps Script vinculado a ela.
-2. Confirmar o horário real de publicação da RPI para calibrar o
-   horário do trigger.
-3. Fechar o item pendente de Desenho Industrial (PDF) antes de
-   implementar `RpiDesenho.gs` por completo — o restante do sistema pode
-   ir para produção sem isso, com esse módulo soltando o aviso "ainda
-   manual" enquanto não for fechado.
+O roteiro acima saiu do papel: a pasta `apps_script/` (raiz do
+repositório) tem os 13 arquivos `.gs` + `appsscript.json` + um
+`README.md` de implantação, implementando de fato `rotinaSemanalRPI()`
+para **Marcas e Patentes** contra a `PLANILHA_CONSOLIDADA_K4.xlsx` —
+download, descompactação, parsing de XML, cruzamento com a base de
+clientes, gravação de histórico com idempotência, atualização de fase
+via `CONFIG_DESPACHO_MARCA`/`CONFIG_DESPACHO_PATENTE`, cálculo de prazo
+fatal e gravação em `PAINEL_PRAZOS`, e e-mail de resumo semanal/aviso de
+falha. `RpiDesenho.gs` é um stub controlado que falha de forma isolada
+(tratado como "edição não disponível"), sem travar as outras duas
+seções.
+
+O que ainda falta para ir 100% para produção (detalhado no
+`apps_script/README.md`):
+
+1. **Colar o código no editor de Apps Script** vinculado à planilha real
+   no Google Sheets (depende de você importar a `PLANILHA_CONSOLIDADA_K4.xlsx`
+   e abrir Extensões → Apps Script — eu não tenho acesso direto a editar
+   sua planilha do Google).
+2. **Validar o schema do XML de Marcas** na primeira execução real —
+   `RpiMarcas.gs` foi escrito por analogia ao XML de Patentes (que foi
+   validado com arquivo real), já que ainda não inspecionei o
+   `RM<edição>.xml` diretamente.
+3. Confirmar o horário real de publicação da RPI para calibrar o horário
+   do gatilho (está provisoriamente em 14h de terça-feira).
+4. Fechar o item pendente de Desenho Industrial (PDF) antes de
+   implementar `RpiDesenho.gs` por completo — o restante do sistema já
+   pode ir para produção sem isso.
