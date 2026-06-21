@@ -73,16 +73,37 @@ processo de exame prioritário, sem duplicar nome/telefone/e-mail.
 
 ### 4.2 Processo de Registro de Marca
 
-| Campo | Observação |
-|---|---|
-| Marca | |
-| Classe contratada | |
-| Número do processo/protocolo | |
-| Data de envio da taxa para a Escalada | só Escalada |
-| Status do pagamento da taxa | |
-| Valor do contrato | |
-| Data de envio do protocolo no e-mail do cliente | |
-| Fase atual | 1 - Exame formal / 2 - Oposição / 3 - Exame de mérito / 4 - Resultado final / 5 - Arquivado |
+Confirmado nas planilhas reais ("ESCALADA" e "K4 MARCAS"). As duas abas têm
+estrutura quase idêntica, com pequenas diferenças de origem:
+
+| Campo | Só Escalada | Só K4 |
+|---|---|---|
+| Contato (feito?) | sim | |
+| DDD | sim | (telefone já vem com DDD em K4) |
+| Telefone | sim | sim |
+| E-mail | sim | sim |
+| Nome / Cliente | sim | sim |
+| Mês de venda | | sim |
+| Vendedor | | sim |
+| Pagamento ao escritório K4 | | sim |
+| Plano | | sim (campo livre, pouco preenchido) |
+| Classe | sim | sim |
+| Marca | sim | sim |
+| Estudo de viabilidade / Astrea viabilidade | sim | sim |
+| Documentação (Doc / Astrea) | sim | sim |
+| Contrato assinado | sim | sim |
+| Procuração assinada | sim | sim |
+| Cadastro INPI | sim | |
+| Logo | sim | sim |
+| Data de envio da taxa | sim | |
+| Pagamento da taxa | sim | sim |
+| Valor do contrato | sim | |
+| Número do protocolo | sim | sim |
+| Data de envio do protocolo ao e-mail do cliente | sim | sim |
+| Fase 1 (Exame formal) | sim | sim |
+| Fase 2 (status + oposição: houve ou não) | sim | (a aba K4 não tem coluna explícita de oposição na fase 2 — tratar via aba de Oposições) |
+| Fase 3 (Exame de mérito) | sim | sim |
+| Fase 4 (Resultado final) | sim | sim |
 
 A fase do processo é o campo-chave que dispara (ou não) os submódulos de
 oposição, exigência, indeferimento, nulidade ou arquivamento abaixo.
@@ -104,7 +125,12 @@ oposição, exigência, indeferimento, nulidade ou arquivamento abaixo.
 | Taxa |
 | Protocolo da petição |
 | E-mail encaminhado ao cliente |
+| Falta documento (observação do que falta) |
 | Observação |
+
+*(Confirmado na aba real "PRIORITARIOS" — campos batem com o que você
+descreveu, com a coluna extra "Falta doc" usada como observação de
+pendência documental.)*
 
 ### 4.4 Projeto de Naming
 
@@ -119,117 +145,263 @@ Inclui todos os campos básicos do cliente/processo, mais:
 | Desenvolvimento de logo (sim/não) |
 | Parceiro que fez a logo | VEN ou Might |
 
+*(Confirmado na aba real "NAMING" — inclui também "Mês", "Pagamento K4" e
+"Formulário [preenchido]" como campos de controle interno, além dos que
+você listou.)*
+
 ### 4.5 Fale Conosco
 
 | Campo |
 |---|
+| Contato |
 | Cliente |
 | Marca |
 | Login da solicitação |
 | Senha da solicitação |
 | Data |
+| Conta | preenchido apenas quando o motivo é restituição de taxa |
+| Valor | preenchido apenas quando o motivo é restituição de taxa |
+| Data do retorno |
 | Motivo |
-| Conta para restituição | só se motivo = restituição de taxa |
-| Valor | só se motivo = restituição de taxa |
 
-### 4.6 Desenho Industrial / Patente / Monitoramento de Uso Indevido
+*(Confirmado na aba real "FALE CONOSCO" — a ordem real das colunas tem
+"Conta"/"Valor"/"Data do retorno" antes de "Motivo", e existe um campo
+extra "Data do retorno" que você não tinha mencionado, útil para medir o
+tempo de resposta do escritório.)*
 
-São abas/módulos próprios — a definir em detalhe com você campo a campo
-(ainda não foram especificados, exceto que existem). Proposta inicial: usar
-a mesma estrutura de Processo de Registro de Marca (cliente, número de
-processo, fase, datas, observação) como ponto de partida e ajustar depois
-da revisão com você.
+### 4.6 Desenho Industrial / Patente
+
+Confirmado nas planilhas reais: é **uma única aba** ("DESENHO IND
+PATENTE"), não duas separadas. Segue o mesmo padrão de "K4 MARCAS":
+
+| Campo |
+|---|
+| Mês |
+| Vendedor |
+| Pagamento K4 |
+| Telefone |
+| Cliente |
+| Marca/objeto |
+| Doc |
+| Astrea |
+| Contrato (assinado?) |
+| Procuração (assinada?) |
+| Logo |
+| Taxa / pagamento da taxa |
+| Protocolo (ex.: número BR no formato do INPI para desenho industrial) |
+| E-mail |
+| Data do protocolo |
+| Fase 1 / Fase 3 / Fase 4 (não há "Fase 2" nesta aba — desenho industrial não tem fase de oposição) |
+
+### 4.7 Monitoramento de Uso Indevido / Plano Mensal
+
+Aba real "ACOMP MENSAL", mais simples do que os outros módulos:
+
+| Campo |
+|---|
+| Início (data) |
+| Plano (ex.: Anual) |
+| Telefone |
+| Cliente |
+| Marca |
+| Protocolo (vinculado ao processo de registro, se houver) |
 
 ## 5. Submódulos de fase (dentro de Registro de Marca)
 
-Todos seguem o mesmo "esqueleto" de rastreio + um bloco de campos
-específicos.
+Esta seção foi conferida diretamente na planilha real "Planilha de
+Recursos — Oposições, Indeferimentos, Nulidades..." (abas OPOSIÇÕES,
+INDEFERIMENTO, EXIGENCIAS, NULIDADE, ARQUIVADOS). Os campos reais são mais
+simples do que o roteiro completo que você descreveu — abaixo, para cada
+submódulo, listo (a) os campos que já existem hoje na planilha e (b) os
+campos que você pediu e que **ainda não existem** na planilha atual e
+precisam ser adicionados na consolidação.
 
-**Esqueleto comum** (repetido em Oposição, Indeferimento, Exigência,
-Nulidade):
+### 5.1 Oposição (Fase 2) — aba real "OPOSIÇÕES"
 
-- Origem do cliente (Escalada ou K4)
-- Responsável
-- Marca
-- Classe
-- Número do processo
-- Datas de notificação ao cliente (e-mail e WhatsApp)
-- Prazos (prazo do cliente para se manifestar / prazo fatal do INPI)
-- Status da taxa (emitida/enviada/paga)
-- Status da manifestação (elaborada, data e número do protocolo)
-- Estratégia adotada
+Campos já existentes:
 
-### 5.1 Oposição (Fase 2)
+| Campo |
+|---|
+| Notificação (INPI já notificou? sim/não) |
+| Empresa (origem: Escalada ou K4) |
+| Responsável |
+| Marca (+ classe entre parênteses) |
+| Número do processo |
+| Marca oponente / número do processo (em uma única coluna combinada) |
+| Contato (data) |
+| Prazo escritório |
+| Prazo fatal INPI |
+| Vai se manifestar? |
+| Emissão de taxa e envio ao cliente |
+| Taxa paga |
+| Manifestação elaborada |
+| Data do protocolo da manifestação |
+| Estratégia |
 
-Campos específicos, além do esqueleto comum:
+Campos pedidos por você que **faltam** na planilha atual e devem ser
+adicionados na consolidação:
 
-- INPI já notificou a oposição no processo? (sim/não)
-- Marca oponente
-- Número do processo do oponente
-- Cliente vai se manifestar ou não
+- Data de notificação ao cliente por e-mail (separada do WhatsApp)
+- Data de notificação ao cliente por WhatsApp (separada do e-mail)
+- Marca oponente e número do processo do oponente em colunas separadas
+  (hoje estão juntas em uma coluna de texto livre)
+- Número do protocolo da manifestação (hoje só tem a data)
 
-### 5.2 Indeferimento (Fase 4)
+### 5.2 Indeferimento (Fase 4) — aba real "INDEFERIMENTO"
 
-Tudo do esqueleto de oposição **mais**:
+Campos já existentes:
 
-- Despacho do INPI
-- Estratégia adotada, dentre:
-  1. Aguardando decisão do cliente
-  2. Não vai recorrer
-  3. Recurso + retirada de nicho
-  4. Recurso
-  5. Novo pedido
-  6. Recurso + nulidade
-  7. Recurso + caducidade
+| Campo |
+|---|
+| Origem (Escalada ou K4) |
+| Cliente |
+| Contato |
+| Número do processo |
+| Notificado por e-mail (sim/não) |
+| Notificado por WhatsApp (sim/não) |
+| Estratégia de solução (campo livre) |
+| Despacho |
+| Prazo escritório |
+| Prazo INPI |
+| Vai se manifestar ou novo pedido? |
+| Taxa (paga?) |
+| Recurso elaborado? |
+| Data de protocolo do recurso |
+| Resultado final |
 
-### 5.3 Exigência
+A aba já separa notificação por e-mail e WhatsApp (diferente da aba de
+Oposição). A "Estratégia de solução" hoje é texto livre — recomendo
+padronizar como lista fixa, conforme você definiu:
 
-Tudo do esqueleto comum **mais**:
+1. Aguardando decisão do cliente
+2. Não vai recorrer
+3. Recurso + retirada de nicho
+4. Recurso
+5. Novo pedido
+6. Recurso + nulidade
+7. Recurso + caducidade
 
-- Tipo de exigência:
-  1. Atividade
-  2. Nichos
-  3. Pagamento
-  4. Autorização de uso de nome civil na marca
-  5. Itens ilícitos
-  6. Outros (campo livre — lista deve ser revisada periodicamente
-     consultando o INPI para novos motivos de exigência)
+### 5.3 Exigência — aba real "EXIGENCIAS"
 
-### 5.4 Nulidade
+Campos já existentes:
 
-Segue o mesmo padrão do esqueleto comum (sem campos adicionais informados
-até o momento).
+| Campo |
+|---|
+| Origem (Escalada ou K4) |
+| Cliente |
+| Telefone |
+| Número do processo |
+| Tipo de exigência (campo livre) |
+| Notificado por e-mail (sim/não) |
+| Notificado por WhatsApp (sim/não) |
+| Despacho |
+| Contato (data) |
+| Prazo escritório |
+| Prazo INPI |
+| Cliente vai cumprir a exigência? |
+| Taxa (status) |
+| Exigência formalizada/respondida? |
+| Data do protocolo |
 
-### 5.5 Arquivamento
+"Tipo de exigência" já existe como campo, mas é texto livre. Padronizar
+como lista fixa:
+
+1. Atividade
+2. Nichos
+3. Pagamento
+4. Autorização de uso de nome civil na marca
+5. Itens ilícitos
+6. Outros (revisar periodicamente no INPI quais novos motivos de
+   exigência podem surgir)
+
+### 5.4 Nulidade — aba real "NULIDADE"
+
+Campos já existentes:
+
+| Campo |
+|---|
+| Responsável |
+| Origem (Escalada ou K4) |
+| Marca |
+| Número do processo |
+| Contato |
+| Prazo escritório |
+| Prazo INPI |
+| Vai se manifestar? |
+| Taxa paga? |
+| Manifestação/recurso elaborado? |
+| Data do protocolo do recurso |
+| Estratégia adicional para o deferimento |
+| Deferido (sim/não) |
+| Data |
+
+Aqui também faltam, comparado ao que você descreveu: separação de
+notificação por e-mail/WhatsApp e número do protocolo (hoje só data).
+
+### 5.5 Arquivamento — aba real "ARQUIVADOS"
 
 Importante: **não comunicar a mudança de fase ao cliente** neste caso —
-campo de controle interno apenas.
+campo de controle interno apenas (assim como a planilha real já indica
+explicitamente em uma observação na própria aba).
 
-Campos:
+Campos já existentes:
 
-- Despacho
-- Número do processo
-- Marca
-- Data do arquivamento
-- Estratégia:
-  - Solicitação de novo prazo para recolher a procuração
-  - Recurso
-- Data do protocolo
-- Novo protocolo de registro
-- Fase (1 a 5)
+| Campo |
+|---|
+| Despacho |
+| Número do processo arquivado |
+| Marca |
+| Data do arquivamento |
+| Taxa de prazo |
+| Taxa de anexo |
+| Taxa de recurso (art. 333) |
+| Data do protocolo |
+| Novo protocolo |
+| 2ª fase |
+| 3ª fase |
+| 4ª fase |
+
+A planilha real já tem 3 colunas de taxa diferentes (prazo, anexo, recurso
+art. 333) que não estavam no seu resumo inicial — bom manter, pois cada
+uma trata de uma exigência financeira distinta do processo arquivado.
+Padronizar a estratégia como lista fixa:
+
+- Solicitação de novo prazo para recolher a procuração
+- Recurso
 
 ## 6. Migração das planilhas atuais
 
-| Planilha atual | Destino no novo modelo |
-|---|---|
-| Recursos | Referência/apoio — avaliar quais dados ainda são usados e migrar campo a campo |
-| Acompanhamento (K4) | Cliente + Processo de Registro de Marca (origem K4) + Exame Prioritário + Naming + Fale Conosco + outras abas (Desenho Industrial, Patente, Monitoramento) |
-| Acompanhamento Escalada | Cliente + Processo de Registro de Marca (origem Escalada) |
+Mapeamento já validado a partir dos dois arquivos reais analisados:
 
-Como as três planilhas ainda têm campos que não me foram detalhados
-(Desenho Industrial, Patente, Monitoramento), o primeiro passo prático é eu
-acessar os links e mapear coluna a coluna antes de definir o schema final
-desses três módulos.
+**Arquivo "Acompanhamento_Registro_de_Marca"**
+
+| Aba real | Destino no novo modelo |
+|---|---|
+| ESCALADA | Cliente (origem Escalada) + Processo de Registro de Marca |
+| K4 MARCAS | Cliente (origem K4) + Processo de Registro de Marca |
+| PRIORITARIOS | Exame Prioritário |
+| NAMING | Projeto de Naming |
+| FALE CONOSCO | Fale Conosco |
+| DESENHO IND PATENTE | Desenho Industrial / Patente (uma única aba/módulo) |
+| ACOMP MENSAL | Monitoramento de Uso Indevido (plano mensal) |
+| Página24 | Aba residual/rascunho com poucos dados — avaliar se ainda é usada antes de migrar |
+
+**Arquivo "Planilha de Recursos — Oposições, Indeferimentos, Nulidades..."**
+
+| Aba real | Destino no novo modelo |
+|---|---|
+| OPOSIÇÕES | Submódulo Oposição, vinculado ao Processo de Registro de Marca pelo nº de processo |
+| INDEFERIMENTO | Submódulo Indeferimento |
+| EXIGENCIAS | Submódulo Exigência |
+| NULIDADE | Submódulo Nulidade |
+| ARQUIVADOS | Submódulo Arquivamento |
+| Guia de Análises | Não é dado estruturado — é um texto-guia de critérios de análise para recurso de indeferimento; manter como documentação/checklist de apoio à equipe, não como módulo de dados |
+
+A chave de junção entre as duas planilhas é o **número do processo** (ou
+nome da marca/cliente, quando o processo não bate por divergência de
+digitação). Isso confirma que hoje a equipe já mantém esses dados
+separados por planilha e cruza manualmente — o sistema novo deve eliminar
+essa necessidade de cruzamento manual.
 
 ## 7. Arquitetura proposta
 
@@ -258,10 +430,24 @@ que o modelo de campos estiver validado em uso real.
 
 ## 8. Próximos passos
 
-1. Eu acessar as 3 planilhas para mapear os campos que ainda faltam
-   (Desenho Industrial, Patente, Monitoramento de Uso Indevido) e confirmar
-   nomes de colunas existentes.
-2. Validar com você o modelo de dados das seções 3–5.
-3. Definir a opção de arquitetura (A ou B).
-4. Implementar a consolidação/migração dos dados.
-5. Implementar alertas de prazo (oposição, exigência, indeferimento).
+1. ~~Mapear os campos reais de Desenho Industrial, Patente e Monitoramento~~
+   — concluído com a análise dos dois arquivos enviados (seções 4.6, 4.7 e
+   6).
+2. Validar com você os campos que identifiquei como **faltantes** frente
+   ao que você descreveu (datas separadas de notificação por e-mail/
+   WhatsApp na Oposição/Nulidade, oponente em colunas separadas, número de
+   protocolo da manifestação) e decidir se entram já na primeira versão do
+   sistema ou ficam para uma segunda etapa.
+3. Padronizar como listas fixas os campos que hoje são texto livre:
+   "Estratégia de solução" (Indeferimento) e "Tipo de exigência"
+   (Exigência).
+4. Definir a chave de vinculação entre o processo de registro e seus
+   submódulos de fase — recomendo usar o **número do processo** como
+   identificador único, já que é o campo presente em todas as abas.
+5. Definir a opção de arquitetura (A — Sheets/Apps Script, ou B — app web
+   dedicado).
+6. Implementar a consolidação/migração dos dados reais das duas planilhas
+   analisadas.
+7. Implementar alertas de prazo (oposição, exigência, indeferimento,
+   nulidade) com base nos campos "Prazo escritório" e "Prazo INPI" já
+   existentes.
