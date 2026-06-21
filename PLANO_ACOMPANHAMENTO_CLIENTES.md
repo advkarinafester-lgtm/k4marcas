@@ -602,16 +602,22 @@ Você confirmou que essas duas seções da RPI também são prioridade agora.
 Os formatos disponíveis são diferentes do XML de Marcas, então o nível de
 automação muda para cada uma:
 
-**Seção VI Patentes — disponível em TXT**
-- Mesmo nível de automação da Seção V Marcas: `UrlFetchApp` baixa o
-  arquivo, o conteúdo é parseado por regex/posição de campo (formato TXT
-  estruturado), cruzado pelo número de processo com a base de Patentes
-  (módulo da seção 4 ainda a detalhar com você), e segue o mesmo fluxo de
-  atualização de fase + geração de prazo + aviso à equipe.
-- Falta confirmar com você um link de exemplo (igual fizemos com o
-  `RM2893.zip`) para eu travar o padrão de URL desta seção.
+**Seção VI Patentes — disponível em TXT — padrão de URL confirmado**
 
-**Seção III Desenho Industrial — só existe em PDF**
+- **Padrão**: `https://revistas.inpi.gov.br/txt/P<edição>.zip`
+  (ex.: edição 2893 → `P2893.zip`) — mesma lógica de Marcas, só troca o
+  prefixo de `RM` para `P`.
+- Mesmo nível de automação da Seção V Marcas: `UrlFetchApp` baixa o ZIP,
+  `Utilities.unzip()` extrai o TXT, o conteúdo é parseado por
+  regex/posição de campo, cruzado pelo número de processo com a base de
+  Patentes (módulo da seção 4 ainda a detalhar com você), e segue o mesmo
+  fluxo de atualização de fase + geração de prazo + aviso à equipe.
+
+**Seção III Desenho Industrial — só existe em PDF — padrão de URL confirmado**
+
+- **Padrão**: `https://revistas.inpi.gov.br/pdf/Desenhos_Industriais<edição>.pdf`
+  (ex.: edição 2893 → `Desenhos_Industriais2893.pdf`) — note que aqui o
+  arquivo é o PDF direto, sem ZIP, diferente de Marcas e Patentes.
 - Você decidiu pela abordagem de **automação com revisão humana**: o
   Apps Script baixa o PDF e tenta extrair o texto automaticamente (via
   conversão do PDF para Google Doc pelo Drive, que faz OCR), pré-
@@ -625,8 +631,11 @@ automação muda para cada uma:
   pendentes de confirmação" — lista só os despachos extraídos de PDF
   ainda não revisados, para a equipe checar rapidamente toda terça antes
   de seguir com o resto do trabalho.
-- Falta confirmar com você um link de exemplo de PDF desta seção, para eu
-  avaliar a qualidade/formatação do PDF antes de desenhar a extração.
+
+Como as três seções compartilham o número de edição (a mesma terça-feira
+publica `RM<n>`, `P<n>` e `Desenhos_Industriais<n>` juntos), o mesmo
+gatilho semanal do Apps Script pode buscar as três de uma vez, usando o
+mesmo contador de "última edição processada".
 
 ## 10. Próximos passos
 
@@ -655,10 +664,12 @@ automação muda para cada uma:
 10. Testar o download via `UrlFetchApp` dentro do próprio Apps Script
     (servidor do Google, sem a restrição de rede desta sessão) para
     validar o padrão de URL na prática antes de ir para produção.
-11. Você me enviar um link de exemplo do TXT da Seção VI Patentes, para
-    eu confirmar o padrão de URL (seção 9.4).
-12. Você me enviar um link de exemplo do PDF da Seção III Desenho
-    Industrial, para eu avaliar a formatação antes de desenhar a extração
-    com revisão humana (seção 9.4).
-13. Desenhar a aba "Despachos pendentes de confirmação" para a revisão
+11. ~~Confirmar o link/padrão de URL de Patentes e Desenho Industrial~~ —
+    concluído, ver seção 9.4 (`P<edição>.zip` e
+    `Desenhos_Industriais<edição>.pdf`).
+12. Desenhar a aba "Despachos pendentes de confirmação" para a revisão
     manual dos despachos extraídos de PDF (Desenho Industrial).
+13. Mapear, com você, os despachos próprios de Patentes e Desenho
+    Industrial (são diferentes dos despachos de Marcas — ex.: concessão
+    de patente, exigência técnica) para montar a tabela "Despacho →
+    Fase/Ação" de cada módulo, no mesmo formato da seção 9.2.
