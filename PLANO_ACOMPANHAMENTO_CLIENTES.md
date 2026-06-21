@@ -739,6 +739,22 @@ Estrutura proposta de abas para a nova planilha única, juntando tudo que
 já foi validado (Marcas e Patentes fechados; Desenho Industrial entra
 como pendente, sem travar o resto).
 
+**Montada como planilha real**: todas as 23 abas abaixo (operacionais,
+automatizadas e de configuração) já existem como arquivo
+`PLANILHA_CONSOLIDADA_K4.xlsx` (raiz do repositório) — com cabeçalhos,
+larguras de coluna, congelamento de cabeçalho, filtro automático e
+dropdowns já ligados (ex.: Estratégia do Indeferimento → aba
+CONFIG_ESTRATEGIA_INDEFERIMENTO; Tipo de exigência → aba
+CONFIG_TIPO_EXIGENCIA; Origem → K4/Escalada). É a base para abrir no
+Google Sheets e começar a migrar os dados reais (item 8 dos próximos
+passos). As 4 abas CONFIG_DESPACHO_MARCA, CONFIG_DESPACHO_PATENTE,
+CONFIG_ESTRATEGIA_INDEFERIMENTO e CONFIG_TIPO_EXIGENCIA vieram do arquivo
+`CONFIG_DESPACHOS_RPI.xlsx` já entregue anteriormente, agora reunidas no
+mesmo arquivo consolidado. As abas de PROCESSOS_PATENTE/
+PROCESSOS_DESENHO_INDUSTRIAL e DESPACHOS_DESENHO_INDUSTRIAL já têm a
+estrutura de colunas, mas continuam marcadas como pendentes de
+detalhamento final (item 15).
+
 ### 11.1 Abas de cadastro/operacionais (dados que a equipe preenche)
 
 | Aba | Conteúdo | Chave |
