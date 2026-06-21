@@ -602,16 +602,47 @@ Você confirmou que essas duas seções da RPI também são prioridade agora.
 Os formatos disponíveis são diferentes do XML de Marcas, então o nível de
 automação muda para cada uma:
 
-**Seção VI Patentes — disponível em TXT — padrão de URL confirmado**
+**Seção VI Patentes — padrão de URL confirmado — ZIP traz TXT e XML**
 
 - **Padrão**: `https://revistas.inpi.gov.br/txt/P<edição>.zip`
   (ex.: edição 2893 → `P2893.zip`) — mesma lógica de Marcas, só troca o
   prefixo de `RM` para `P`.
-- Mesmo nível de automação da Seção V Marcas: `UrlFetchApp` baixa o ZIP,
-  `Utilities.unzip()` extrai o TXT, o conteúdo é parseado por
-  regex/posição de campo, cruzado pelo número de processo com a base de
-  Patentes (módulo da seção 4 ainda a detalhar com você), e segue o mesmo
-  fluxo de atualização de fase + geração de prazo + aviso à equipe.
+- O ZIP real contém **dois arquivos**: `P<edição>.txt` (texto simples) e
+  `Patente_<edição>_<data>.xml` (XML estruturado, com `<despacho>`,
+  `<codigo>`, `<titulo>`, `<processo-patente><numero>` e `<comentario>`)
+  — vamos usar o **XML**, é mais confiável para parsing que o TXT.
+- O catálogo de despachos de Patentes é muito maior que o de Marcas: só
+  na edição 2893 apareceram **86 códigos de despacho distintos** (contra
+  9 de Marcas) — famílias como exigência formal (`2.x`), exigência
+  técnica (`6.x`), publicação (`3.x`), deferimento/indeferimento (`9.x`),
+  arquivamento (`8.x`/`11.x`), recurso (`12.x`/`100.x`/`111`-`130`),
+  concessão (`16.1`), nulidade (`200`/`201`), trâmite prioritário
+  (`28.x`), transferência/alteração de titularidade (`25.x`) etc.
+- **Achado importante**: o INPI costuma escrever o próprio prazo dentro
+  do texto do despacho (`<comentario>`), por exemplo:
+  - Código `2.5` (Exigência Formal Preliminar): *"Prazo para cumprimento
+    - 30 (Trinta) dias corridos contados do 1º dia útil após essa
+    publicação"*
+  - Código `28.21` (Exigência formal de trâmite prioritário):
+    *"manifestar-se [...] no prazo de 60 dias, sob pena de inadmissão"*
+  - Código `100.1` (Recurso provido): *"corre o prazo de 60 (sessenta)
+    dias para o pagamento da retribuição"*
+  - Código `121` (Exigência): *"Cumpra as exigências do parecer no prazo
+    de 60 (sessenta) dias"*
+  - Isso muda a estratégia: em vez de depender só de uma tabela fixa
+    "código → prazo" (inviável de montar à mão para 86+ códigos, e o
+    INPI pode criar novos), o script deve **extrair o prazo
+    dinamicamente do próprio texto do despacho** via regex (padrão
+    `prazo de N dias`/`prazo para cumprimento - N dias`), calculando a
+    data fatal a partir da data de publicação da RPI.
+  - Para despachos sem prazo explícito no texto (a maioria — ex.:
+    "Concessão de Patente", "Notificação de recebimento",
+    "Arquivamento"), o tratamento é apenas informativo: atualiza o
+    histórico e a fase, sem gerar prazo de ação.
+  - Uma tabela de configuração "código → família/ação" (editável, não
+    fixa no script) continua útil para decidir **qual fase/submódulo**
+    cada código deve atualizar — mas a extração do **prazo em si** não
+    deve depender de mapear código por código.
 
 **Seção III Desenho Industrial — só existe em PDF — padrão de URL confirmado**
 
@@ -669,7 +700,14 @@ mesmo contador de "última edição processada".
     `Desenhos_Industriais<edição>.pdf`).
 12. Desenhar a aba "Despachos pendentes de confirmação" para a revisão
     manual dos despachos extraídos de PDF (Desenho Industrial).
-13. Mapear, com você, os despachos próprios de Patentes e Desenho
-    Industrial (são diferentes dos despachos de Marcas — ex.: concessão
-    de patente, exigência técnica) para montar a tabela "Despacho →
-    Fase/Ação" de cada módulo, no mesmo formato da seção 9.2.
+13. ~~Analisar o catálogo de despachos de Patentes~~ — concluído com o
+    arquivo `P2893.zip` real (seção 9.4): 86 códigos distintos, com
+    extração dinâmica de prazo a partir do texto do próprio despacho.
+14. Construir a regex de extração de prazo a partir do `<comentario>` dos
+    despachos de Patentes (padrões "prazo de N dias" / "prazo para
+    cumprimento - N dias") e validar com a equipe os casos que escapam
+    desse padrão.
+15. Você me enviar um exemplo do PDF de Desenho Industrial
+    (`Desenhos_Industriais2893.pdf` ou outra edição), para eu repetir essa
+    mesma análise e ver se o INPI também descreve os prazos no texto do
+    despacho lá.
