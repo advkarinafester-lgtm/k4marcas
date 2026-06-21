@@ -132,6 +132,50 @@ oposição, exigência, indeferimento, nulidade ou arquivamento abaixo.
 descreveu, com a coluna extra "Falta doc" usada como observação de
 pendência documental.)*
 
+#### 4.3.1 Despacho INPI (RPI) — novo, complementa o Exame Prioritário
+
+Você anexou uma planilha de leitura do RPI (Revista da Propriedade
+Industrial) com os despachos publicados pelo INPI, hoje usada para
+acompanhar especificamente os pedidos de trâmite prioritário. Estrutura
+real do arquivo:
+
+| Campo | Observação |
+|---|---|
+| Nº RPI | número da edição da Revista da Propriedade Industrial em que o despacho saiu |
+| Nº do processo | chave de ligação com o Exame Prioritário (e com o Processo de Registro de Marca) |
+| Despacho | tipo do despacho publicado (lista observada abaixo) |
+| Texto complementar | motivo detalhado — preenchido principalmente em indeferimentos e nas justificativas de prioridade concedida |
+| Nome | nome do cliente/marca |
+| E-mail | e-mail do cliente |
+| Cliente comunicado | "OK" quando o cliente já foi avisado do despacho |
+
+Despachos observados até agora (cada processo pode ter mais de um
+despacho na mesma edição do RPI, conforme a fase avança):
+
+- Petição de trâmite prioritário apta (aguardando término de prazo legal)
+- Petição de trâmite prioritário atendida
+- Publicação de pedido de registro para oposição (exame formal concluído)
+- Deferimento do pedido
+- Deferimento da petição
+- Indeferimento do pedido
+- Concessão de registro
+- Sobrestamento do exame de mérito
+- Notificação de recurso
+
+Modelagem recomendada: tratar como um **histórico** (1 processo → N
+despachos ao longo do tempo), não um campo único — cada linha do RPI é um
+evento novo, não uma substituição do anterior. Isso também permite usar a
+mesma estrutura para alimentar o campo de Fase do Exame Prioritário e do
+Processo de Registro de Marca automaticamente (ex.: "Deferimento do
+pedido" → Fase 4; "Publicação para oposição" → Fase 2), e para disparar o
+aviso ao cliente quando "Cliente comunicado" ainda não estiver marcado
+como OK.
+
+Essa leitura de RPI é alimentada periodicamente (a cada edição publicada
+pelo INPI) — no desenho do Apps Script (seção 7), prever uma rotina de
+importação desses boletins e cruzamento automático pelo número do
+processo com a base consolidada.
+
 ### 4.4 Projeto de Naming
 
 Inclui todos os campos básicos do cliente/processo, mais:
@@ -462,10 +506,13 @@ lista fechada sem fallback.
    submódulos de fase — recomendo usar o **número do processo** como
    identificador único, já que é o campo presente em todas as abas.
 5. Desenhar a planilha consolidada (abas + colunas finais, incluindo os 6
-   ajustes da seção 8) e o roteiro do Apps Script (validações, alertas de
-   prazo a partir de "Prazo escritório"/"Prazo INPI", e o dropdown com
-   "Outro" para Estratégia/Tipo de exigência).
-6. Migrar os dados reais das duas planilhas analisadas para a planilha
-   consolidada.
+   ajustes da seção 8 e o novo histórico de Despacho INPI/RPI da seção
+   4.3.1) e o roteiro do Apps Script (validações, alertas de prazo a
+   partir de "Prazo escritório"/"Prazo INPI", dropdown com "Outro" para
+   Estratégia/Tipo de exigência, e rotina de importação dos boletins do
+   RPI).
+6. Migrar os dados reais das três planilhas analisadas (Acompanhamento,
+   Recursos, RPI) para a planilha consolidada.
 7. Implementar os alertas automáticos de prazo (oposição, exigência,
-   indeferimento, nulidade).
+   indeferimento, nulidade) e o aviso de "cliente ainda não comunicado"
+   a partir do histórico de Despacho INPI.
