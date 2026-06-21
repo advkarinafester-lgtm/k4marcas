@@ -518,11 +518,18 @@ toda terça-feira, sem a equipe precisar entrar no site do INPI.
    para rodar toda terça-feira, no horário em que a RPI costuma ser
    publicada (com uma margem de segurança, ex.: rodar de novo algumas
    horas depois caso o arquivo ainda não esteja disponível).
-2. **Download automático**: `UrlFetchApp` busca o XML da edição da
-   semana diretamente no site do INPI.
-3. **Parsing**: `XmlService` (nativo do Apps Script) lê o XML e extrai,
-   por processo: número do RPI, número do processo, código/descrição do
-   despacho, texto complementar.
+2. **Download automático**: `UrlFetchApp` busca o arquivo
+   `https://revistas.inpi.gov.br/txt/RM<edição>.zip` (padrão confirmado
+   por você — ex.: `RM2893.zip`). O número da edição é sequencial
+   (incrementa 1 por semana), então a planilha consolidada guarda em uma
+   célula de configuração qual foi a última edição processada, e o
+   script tenta a próxima (`última + 1`) a cada execução. Se o download
+   falhar (edição ainda não publicada), o script tenta novamente em
+   execuções seguintes e avisa a equipe se passar de X tentativas.
+3. **Descompactação + parsing**: `Utilities.unzip()` extrai o
+   `RM<edição>.xml` de dentro do ZIP; `XmlService` (nativo do Apps Script)
+   lê esse XML e extrai, por processo: número do RPI, número do processo,
+   código/descrição do despacho, texto complementar.
 4. **Filtro pela nossa base**: o script cruza cada número de processo do
    XML com os números de processo já cadastrados nas abas consolidadas
    (ESCALADA, K4 MARCAS, PRIORITARIOS, e também DESENHO IND PATENTE, se
@@ -569,15 +576,25 @@ planilha (não fixa no código), para a equipe completar conforme novos
 despachos forem aparecendo nas próximas edições, sem precisar de mim para
 alterar o script toda vez.
 
-### 9.3 Ponto em aberto antes de implementar
+### 9.3 Padrão de download confirmado
 
-Preciso que você (ou alguém da equipe) me confirme o **link/padrão de URL**
-de onde a RPI em XML é baixada hoje no site do INPI — não vou adivinhar
-essa URL, ela deve vir de uma página real que vocês acessam ou de um link
-que vocês me enviem, pois a estrutura de publicação pode variar e eu não
-tenho como validar isso sem ver o site ao vivo. Com esse link de exemplo,
-eu confirmo o padrão (se o número da edição entra na URL, se há
-zero-padding, etc.) e já desenho o trecho de `UrlFetchApp` certo.
+Você confirmou o link real de uma edição baixada
+(`https://revistas.inpi.gov.br/txt/RM2893.zip`), o que fecha o desenho
+técnico do download:
+
+- **Site**: https://revistas.inpi.gov.br/rpi/ → Seção V Marcas
+- **Padrão de URL do arquivo**: `https://revistas.inpi.gov.br/txt/RM<edição>.zip`
+  (ex.: edição 2893 → `RM2893.zip`)
+- **Conteúdo do ZIP**: um único arquivo `RM<edição>.xml`
+- **Acesso**: público, sem login — confirma que `UrlFetchApp` funciona
+  sem necessidade de autenticação
+
+Não foi possível validar esse link diretamente nesta sessão porque o
+ambiente em que estou rodando bloqueia o acesso à internet por uma
+política de rede própria (não é um bloqueio do INPI) — a confirmação veio
+do link real que você copiou do navegador. Esse padrão deve ser testado
+de fato dentro do Apps Script (que roda nos servidores do Google, sem
+essa restrição) antes de ir para produção.
 
 ## 10. Próximos passos
 
@@ -586,8 +603,8 @@ zero-padding, etc.) e já desenho o trecho de `UrlFetchApp` certo.
    6).
 2. ~~Decidir quais lacunas entram na v1~~ — concluído, ver seção 8.
 3. ~~Decidir a arquitetura~~ — concluído: Opção A (Sheets/Apps Script).
-4. Você me enviar um link de exemplo de download da RPI em XML, para eu
-   confirmar o padrão de URL usado pelo script de importação (seção 9.3).
+4. ~~Confirmar o link/padrão de URL de download da RPI~~ — concluído,
+   ver seção 9.3 (`https://revistas.inpi.gov.br/txt/RM<edição>.zip`).
 5. Validar comigo a tabela de mapeamento "Despacho → Fase/Ação" da seção
    9.2 — especialmente os despachos marcados como "a confirmar".
 6. Definir a chave de vinculação entre o processo de registro e seus
@@ -603,3 +620,6 @@ zero-padding, etc.) e já desenho o trecho de `UrlFetchApp` certo.
 9. Implementar os alertas automáticos de prazo (oposição, exigência,
    indeferimento, nulidade) e o aviso de "cliente ainda não comunicado"
    a partir do histórico de Despacho INPI.
+10. Testar o download via `UrlFetchApp` dentro do próprio Apps Script
+    (servidor do Google, sem a restrição de rede desta sessão) para
+    validar o padrão de URL na prática antes de ir para produção.
