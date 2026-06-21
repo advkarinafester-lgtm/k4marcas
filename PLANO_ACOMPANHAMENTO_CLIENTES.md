@@ -132,12 +132,17 @@ oposição, exigência, indeferimento, nulidade ou arquivamento abaixo.
 descreveu, com a coluna extra "Falta doc" usada como observação de
 pendência documental.)*
 
-#### 4.3.1 Despacho INPI (RPI) — novo, complementa o Exame Prioritário
+#### 4.3.1 Despacho INPI (RPI) — vale para toda a base, não só Prioritário
 
-Você anexou uma planilha de leitura do RPI (Revista da Propriedade
-Industrial) com os despachos publicados pelo INPI, hoje usada para
-acompanhar especificamente os pedidos de trâmite prioritário. Estrutura
-real do arquivo:
+> **Atualização**: a planilha anexada nasceu para acompanhar trâmite
+> prioritário, mas você confirmou que o objetivo é usar a leitura semanal
+> da RPI para **todos os processos de registro de marca** (K4 e
+> Escalada), não só os prioritários. Por isso este submódulo deixa de ser
+> exclusivo do Exame Prioritário e passa a ser um histórico vinculado a
+> qualquer Processo de Registro de Marca pelo número do processo — ver
+> seção 10 para o desenho completo da automação semanal.
+
+Estrutura real do arquivo anexado:
 
 | Campo | Observação |
 |---|---|
@@ -495,24 +500,106 @@ campo de "Estratégia"/"Tipo de exigência" passa a ser
 `lista fixa + campo "Outro" (texto livre)`, em vez de texto livre puro ou
 lista fechada sem fallback.
 
-## 9. Próximos passos
+## 9. Automação semanal da RPI (toda terça-feira)
+
+Você confirmou dois pontos que viabilizam automação completa, sem
+intervenção manual de download:
+
+- O INPI publica a RPI em **arquivo XML oficial**, estruturado por
+  processo e código de despacho.
+- O acesso é **público, sem necessidade de login**.
+
+Isso significa que o Apps Script pode buscar e processar a RPI sozinho,
+toda terça-feira, sem a equipe precisar entrar no site do INPI.
+
+### 9.1 Fluxo proposto
+
+1. **Gatilho semanal (time-driven trigger)**: configurado no Apps Script
+   para rodar toda terça-feira, no horário em que a RPI costuma ser
+   publicada (com uma margem de segurança, ex.: rodar de novo algumas
+   horas depois caso o arquivo ainda não esteja disponível).
+2. **Download automático**: `UrlFetchApp` busca o XML da edição da
+   semana diretamente no site do INPI.
+3. **Parsing**: `XmlService` (nativo do Apps Script) lê o XML e extrai,
+   por processo: número do RPI, número do processo, código/descrição do
+   despacho, texto complementar.
+4. **Filtro pela nossa base**: o script cruza cada número de processo do
+   XML com os números de processo já cadastrados nas abas consolidadas
+   (ESCALADA, K4 MARCAS, PRIORITARIOS, e também DESENHO IND PATENTE, se
+   aplicável). Só os que baterem entram no histórico — o resto do XML
+   (milhares de processos de terceiros) é descartado.
+5. **Gravação no histórico de Despacho INPI** (seção 4.3.1): uma linha
+   nova por despacho, vinculada ao processo do cliente, com data da
+   leitura.
+6. **Atualização automática de fase**: uma tabela de mapeamento
+   "Despacho → Fase/Ação" (ver 9.2) decide se a fase do processo muda e
+   se algum submódulo (Oposição, Indeferimento, Exigência, Nulidade,
+   Arquivamento) deve ser aberto automaticamente com os dados básicos já
+   preenchidos (cliente, marca, número do processo, data do despacho).
+7. **Geração de prazo**: quando o despacho exige ação (ex.: indeferimento
+   abre prazo de recurso), o script já cria a linha de prazo no submódulo
+   correspondente, com a data fatal calculada a partir da data do
+   despacho.
+8. **Aviso interno**: e-mail (ou outro canal que vocês definirem) para a
+   equipe toda terça, listando: clientes afetados, despacho recebido,
+   fase nova, prazo criado e responsável (vendedor) — para que a equipe
+   trate cada caso sem precisar caçar processo por processo no site do
+   INPI.
+
+### 9.2 Tabela de mapeamento "Despacho → Fase/Ação"
+
+Para os despachos já identificados no arquivo de exemplo, proposta
+inicial (a validar com você, pois a regra de prazo de cada despacho é
+know-how do escritório):
+
+| Despacho | Fase resultante | Gera prazo de ação? |
+|---|---|---|
+| Publicação de pedido de registro para oposição (exame formal concluído) | Fase 2 | Não diretamente — só monitorar se entra oposição de terceiro depois |
+| Deferimento do pedido | Fase 4 (deferido) | Não — só comunicar cliente |
+| Concessão de registro | Fase 4 (concluído) | Não — encerrar processo, comunicar cliente |
+| Indeferimento do pedido | Fase 4 (indeferido) | **Sim** — abre submódulo Indeferimento com prazo de recurso |
+| Sobrestamento do exame de mérito | Mantém fase atual | Não — apenas registrar, sem prazo |
+| Notificação de recurso | Depende do contexto (recurso de terceiro?) | **A confirmar com você** — pode abrir prazo de contrarrazões |
+| Petição de trâmite prioritário apta / atendida | Mantém fase atual | Não — só informativo |
+
+Esta tabela **não é exaustiva**: o INPI tem um catálogo mais amplo de
+despachos do que os 9 observados no arquivo de exemplo (uma única edição
+da RPI). Recomendo tratá-la como uma aba de configuração editável na
+planilha (não fixa no código), para a equipe completar conforme novos
+despachos forem aparecendo nas próximas edições, sem precisar de mim para
+alterar o script toda vez.
+
+### 9.3 Ponto em aberto antes de implementar
+
+Preciso que você (ou alguém da equipe) me confirme o **link/padrão de URL**
+de onde a RPI em XML é baixada hoje no site do INPI — não vou adivinhar
+essa URL, ela deve vir de uma página real que vocês acessam ou de um link
+que vocês me enviem, pois a estrutura de publicação pode variar e eu não
+tenho como validar isso sem ver o site ao vivo. Com esse link de exemplo,
+eu confirmo o padrão (se o número da edição entra na URL, se há
+zero-padding, etc.) e já desenho o trecho de `UrlFetchApp` certo.
+
+## 10. Próximos passos
 
 1. ~~Mapear os campos reais de Desenho Industrial, Patente e Monitoramento~~
    — concluído com a análise dos dois arquivos enviados (seções 4.6, 4.7 e
    6).
 2. ~~Decidir quais lacunas entram na v1~~ — concluído, ver seção 8.
 3. ~~Decidir a arquitetura~~ — concluído: Opção A (Sheets/Apps Script).
-4. Definir a chave de vinculação entre o processo de registro e seus
+4. Você me enviar um link de exemplo de download da RPI em XML, para eu
+   confirmar o padrão de URL usado pelo script de importação (seção 9.3).
+5. Validar comigo a tabela de mapeamento "Despacho → Fase/Ação" da seção
+   9.2 — especialmente os despachos marcados como "a confirmar".
+6. Definir a chave de vinculação entre o processo de registro e seus
    submódulos de fase — recomendo usar o **número do processo** como
    identificador único, já que é o campo presente em todas as abas.
-5. Desenhar a planilha consolidada (abas + colunas finais, incluindo os 6
-   ajustes da seção 8 e o novo histórico de Despacho INPI/RPI da seção
-   4.3.1) e o roteiro do Apps Script (validações, alertas de prazo a
-   partir de "Prazo escritório"/"Prazo INPI", dropdown com "Outro" para
-   Estratégia/Tipo de exigência, e rotina de importação dos boletins do
-   RPI).
-6. Migrar os dados reais das três planilhas analisadas (Acompanhamento,
+7. Desenhar a planilha consolidada (abas + colunas finais, incluindo os 6
+   ajustes da seção 8, o histórico de Despacho INPI/RPI da seção 4.3.1, e
+   a aba de configuração "Despacho → Fase/Ação") e o roteiro do Apps
+   Script (validações, alertas de prazo, dropdown com "Outro" para
+   Estratégia/Tipo de exigência, e a automação semanal da seção 9).
+8. Migrar os dados reais das três planilhas analisadas (Acompanhamento,
    Recursos, RPI) para a planilha consolidada.
-7. Implementar os alertas automáticos de prazo (oposição, exigência,
+9. Implementar os alertas automáticos de prazo (oposição, exigência,
    indeferimento, nulidade) e o aviso de "cliente ainda não comunicado"
    a partir do histórico de Despacho INPI.
