@@ -218,10 +218,19 @@ você listou.)*
 extra "Data do retorno" que você não tinha mencionado, útil para medir o
 tempo de resposta do escritório.)*
 
-### 4.6 Desenho Industrial / Patente
+### 4.6 Patente e Desenho Industrial — separados na v1
 
-Confirmado nas planilhas reais: é **uma única aba** ("DESENHO IND
-PATENTE"), não duas separadas. Segue o mesmo padrão de "K4 MARCAS":
+> **Atualização**: na planilha real hoje, Patente e Desenho Industrial
+> estão misturados em uma única aba ("DESENHO IND PATENTE"). Você decidiu
+> **separar os dois cadastros** na planilha consolidada, já que cada um
+> passou a ter sua própria automação de leitura da RPI (Patentes via XML
+> 100% automático, seção 9.4; Desenho Industrial via PDF com revisão
+> humana, ainda pendente). Os campos abaixo são os mesmos da aba real —
+> a separação está em ter duas abas (`PROCESSOS_PATENTE` e
+> `PROCESSOS_DESENHO_INDUSTRIAL`) em vez de uma, cada uma com seu próprio
+> histórico de despachos vinculado pelo número do processo.
+
+Campos comuns às duas abas (idênticos ao padrão de "K4 MARCAS"):
 
 | Campo |
 |---|
@@ -237,10 +246,20 @@ PATENTE"), não duas separadas. Segue o mesmo padrão de "K4 MARCAS":
 | Procuração (assinada?) |
 | Logo |
 | Taxa / pagamento da taxa |
-| Protocolo (ex.: número BR no formato do INPI para desenho industrial) |
+| Protocolo — em Patente, número no formato `BR NN NNNN NNNNNN-D`; em Desenho Industrial, número no formato `BR 30 NNNN NNNNNN-D` |
 | E-mail |
 | Data do protocolo |
-| Fase 1 / Fase 3 / Fase 4 (não há "Fase 2" nesta aba — desenho industrial não tem fase de oposição) |
+| Fase 1 / Fase 3 / Fase 4 (não há "Fase 2" — nem Patente nem Desenho Industrial têm fase de oposição de terceiros como Marca) |
+
+Diferença entre as duas abas na consolidação:
+
+- **PROCESSOS_PATENTE**: vinculada ao histórico `DESPACHOS_PATENTES`
+  (seção 11.2), atualizado automaticamente toda terça a partir do XML da
+  RPI, com extração dinâmica de prazo via regex no texto do despacho.
+- **PROCESSOS_DESENHO_INDUSTRIAL**: vinculada ao histórico
+  `DESPACHOS_DESENHO_INDUSTRIAL`, que por ora depende do PDF (pendente —
+  item 15 dos próximos passos) e passa pela fila de revisão humana antes
+  de gerar prazo automaticamente.
 
 ### 4.7 Monitoramento de Uso Indevido / Plano Mensal
 
@@ -734,8 +753,8 @@ como pendente, sem travar o resto).
 | EXAME_PRIORITARIO | Exame Prioritário (seção 4.3) | Nº do processo |
 | NAMING | Projeto de Naming (seção 4.4) | ID do cliente |
 | FALE_CONOSCO | Fale Conosco (seção 4.5) | ID do cliente |
-| PROCESSOS_PATENTE | Processos de Patente — campos a confirmar com você (hoje misturados com Desenho Industrial na aba real "DESENHO IND PATENTE"; com a automação de RPI separada por seção, sugiro também separar este cadastro) | Nº do processo (formato `BR ..`) |
-| PROCESSOS_DESENHO_INDUSTRIAL | Processos de Desenho Industrial — pendente de detalhamento (item 15) | Nº do processo |
+| PROCESSOS_PATENTE | Processos de Patente, separado de Desenho Industrial (seção 4.6) | Nº do processo (formato `BR NN NNNN NNNNNN-D`) |
+| PROCESSOS_DESENHO_INDUSTRIAL | Processos de Desenho Industrial, separado de Patente (seção 4.6) — campos de despacho ainda pendentes de detalhamento (item 15) | Nº do processo (formato `BR 30 NNNN NNNNNN-D`) |
 | ACOMP_MENSAL | Monitoramento de uso indevido (seção 4.7) | ID do cliente |
 
 ### 11.2 Abas alimentadas automaticamente pela leitura semanal da RPI
