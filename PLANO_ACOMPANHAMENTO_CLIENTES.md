@@ -785,3 +785,102 @@ item 6 dos próximos passos. Como Marcas, Patentes e Desenho Industrial têm
 faixas de numeração diferentes (Marcas: números puramente numéricos de 9
 dígitos; Patentes: formato `BR NN NNNN NNNNNN-D`), não há risco de
 colisão entre módulos usando essa mesma chave.
+
+## 12. Roteiro técnico do Apps Script
+
+### 12.1 Estrutura de arquivos/funções
+
+```
+Config.gs        — leitura/escrita das abas CONFIG_* (última edição
+                    processada, tabelas de mapeamento)
+RpiMarcas.gs      — download, descompactação, parsing do XML de Marcas
+RpiPatentes.gs    — download, descompactação, parsing do XML de Patentes,
+                    extração dinâmica de prazo via regex
+RpiDesenho.gs     — download e extração via OCR do PDF de Desenho
+                    Industrial (pendente até fechar item 15)
+Matching.gs       — cruza número de processo do XML/PDF com a base
+                    (PROCESSOS_MARCA, PROCESSOS_PATENTE,
+                    PROCESSOS_DESENHO_INDUSTRIAL)
+FaseEAcao.gs      — aplica as tabelas CONFIG_DESPACHO_* para atualizar
+                    fase e abrir/atualizar submódulos
+Prazos.gs         — calcula data fatal, grava em PAINEL_PRAZOS
+Notificacoes.gs   — monta e envia o e-mail/aviso semanal para a equipe
+Main.gs           — função `rotinaSemanalRPI()` chamada pelo trigger,
+                    orquestra a chamada das funções acima em sequência
+```
+
+### 12.2 Pseudocódigo da rotina principal
+
+```js
+function rotinaSemanalRPI() {
+  const config = Config.lerUltimasEdicoes(); // {marcas, patentes, desenho}
+
+  processarSecao('marcas',  config.marcas + 1,  RpiMarcas.baixarEParsear);
+  processarSecao('patentes', config.patentes + 1, RpiPatentes.baixarEParsear);
+  processarSecao('desenho',  config.desenho + 1,  RpiDesenho.baixarEParsear);
+
+  Notificacoes.enviarResumoSemanal();
+}
+
+function processarSecao(secao, edicao, funcaoDeParsing) {
+  let despachos;
+  try {
+    despachos = funcaoDeParsing(edicao); // lança erro se edição ainda não publicada
+  } catch (e) {
+    Notificacoes.avisarFalhaDownload(secao, edicao, e);
+    return; // tenta de novo na próxima execução, sem travar as outras seções
+  }
+
+  const despachosDoEscritorio = Matching.filtrarPorProcessosConhecidos(secao, despachos);
+  despachosDoEscritorio.forEach(d => {
+    Historico.gravar(secao, d);
+    const acao = FaseEAcao.aplicar(secao, d); // atualiza fase, abre submódulo
+    if (acao.geraPrazo) Prazos.criar(d, acao);
+  });
+
+  Config.atualizarUltimaEdicao(secao, edicao);
+}
+```
+
+Pontos importantes desse desenho:
+
+- **Cada seção falha de forma independente**: se a edição de Patentes
+  ainda não foi publicada nesta terça, isso não impede que Marcas seja
+  processado normalmente.
+- **Idempotência**: gravar o histórico verificando se aquele
+  despacho (processo + código + edição) já existe antes de duplicar,
+  para o caso do trigger rodar mais de uma vez na mesma semana (ex.: retry
+  manual).
+- **Desenho Industrial entra no mesmo orquestrador** desde já (a função
+  `RpiDesenho.baixarEParsear` fica como stub/pendente), para não precisar
+  reestruturar o `Main.gs` quando o módulo for fechado — só implementar o
+  conteúdo da função quando tivermos o PDF de exemplo.
+
+### 12.3 Gatilho e operação
+
+- **Trigger**: time-driven, semanal, terça-feira, horário a definir com
+  margem de segurança após a publicação oficial da RPI.
+- **Retry**: se uma seção falhar (edição ainda não disponível), um
+  segundo trigger algumas horas depois tenta novamente; se ainda falhar,
+  o aviso por e-mail sinaliza para a equipe acompanhar manualmente aquela
+  seção até a próxima tentativa.
+- **Limites do Apps Script**: execução tem tempo máximo de 6 minutos por
+  chamada — como o volume de despachos por edição é grande (vimos 4.240
+  despachos só em Patentes na edição 2893), o parsing deve filtrar pela
+  nossa base o mais cedo possível (já durante a leitura do XML, não
+  depois de carregar tudo em memória), para não aproximar do limite.
+- **Log de execução**: cada rodada grava um resumo (edições processadas,
+  despachos encontrados, falhas) em uma aba de log simples, para
+  diagnóstico caso algo pare de funcionar.
+
+### 12.4 O que falta para implementar de fato
+
+1. Eu preciso de acesso de edição à planilha (ou você cria a estrutura de
+   abas da seção 11 e me dá acesso) para escrever o código dentro do
+   editor de Apps Script vinculado a ela.
+2. Confirmar o horário real de publicação da RPI para calibrar o
+   horário do trigger.
+3. Fechar o item pendente de Desenho Industrial (PDF) antes de
+   implementar `RpiDesenho.gs` por completo — o restante do sistema pode
+   ir para produção sem isso, com esse módulo soltando o aviso "ainda
+   manual" enquanto não for fechado.
