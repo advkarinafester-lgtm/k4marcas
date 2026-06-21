@@ -707,7 +707,62 @@ mesmo contador de "última edição processada".
     despachos de Patentes (padrões "prazo de N dias" / "prazo para
     cumprimento - N dias") e validar com a equipe os casos que escapam
     desse padrão.
-15. Você me enviar um exemplo do PDF de Desenho Industrial
-    (`Desenhos_Industriais2893.pdf` ou outra edição), para eu repetir essa
-    mesma análise e ver se o INPI também descreve os prazos no texto do
-    despacho lá.
+15. **Pendente — Desenho Industrial**: você vai enviar o PDF
+    (`Desenhos_Industriais2893.pdf` ou outra edição) quando conseguir,
+    para eu repetir essa mesma análise. Até lá, seguimos com Marcas e
+    Patentes já fechados e o módulo de Desenho Industrial entra na
+    planilha consolidada como pendente de detalhamento (sem bloquear o
+    resto do desenho — seção 11).
+
+## 11. Desenho da planilha consolidada (v1)
+
+Estrutura proposta de abas para a nova planilha única, juntando tudo que
+já foi validado (Marcas e Patentes fechados; Desenho Industrial entra
+como pendente, sem travar o resto).
+
+### 11.1 Abas de cadastro/operacionais (dados que a equipe preenche)
+
+| Aba | Conteúdo | Chave |
+|---|---|---|
+| CLIENTES | Cadastro central (seção 4.1) | ID do cliente |
+| PROCESSOS_MARCA | Processo de Registro de Marca (seção 4.2), com coluna de origem K4/Escalada | Nº do processo |
+| OPOSICOES | Submódulo Oposição (seção 5.1, já com os 3 campos novos da v1) | Nº do processo |
+| INDEFERIMENTOS | Submódulo Indeferimento (seção 5.2), com dropdown de Estratégia + "Outro" | Nº do processo |
+| EXIGENCIAS | Submódulo Exigência (seção 5.3), com dropdown de Tipo + "Outro" | Nº do processo |
+| NULIDADES | Submódulo Nulidade (seção 5.4) | Nº do processo |
+| ARQUIVADOS | Submódulo Arquivamento (seção 5.5) | Nº do processo |
+| EXAME_PRIORITARIO | Exame Prioritário (seção 4.3) | Nº do processo |
+| NAMING | Projeto de Naming (seção 4.4) | ID do cliente |
+| FALE_CONOSCO | Fale Conosco (seção 4.5) | ID do cliente |
+| PROCESSOS_PATENTE | Processos de Patente — campos a confirmar com você (hoje misturados com Desenho Industrial na aba real "DESENHO IND PATENTE"; com a automação de RPI separada por seção, sugiro também separar este cadastro) | Nº do processo (formato `BR ..`) |
+| PROCESSOS_DESENHO_INDUSTRIAL | Processos de Desenho Industrial — pendente de detalhamento (item 15) | Nº do processo |
+| ACOMP_MENSAL | Monitoramento de uso indevido (seção 4.7) | ID do cliente |
+
+### 11.2 Abas alimentadas automaticamente pela leitura semanal da RPI
+
+| Aba | Conteúdo | Alimentada por |
+|---|---|---|
+| DESPACHOS_MARCAS | Histórico de despachos de Marcas (seção 4.3.1) | XML `RM<edição>.xml`, 100% automático |
+| DESPACHOS_PATENTES | Histórico de despachos de Patentes | XML `Patente_<edição>.xml`, 100% automático, com extração dinâmica de prazo via regex no `<comentario>` (seção 9.4) |
+| DESPACHOS_DESENHO_INDUSTRIAL | Histórico de despachos de Desenho Industrial | PDF, automação com revisão humana — pendente até item 15 |
+| DESPACHOS_PENDENTES_CONFIRMACAO | Fila de revisão manual: só os despachos extraídos do PDF de Desenho Industrial ainda não validados pela equipe | Gerada a partir de DESPACHOS_DESENHO_INDUSTRIAL |
+| PAINEL_PRAZOS | Visão consolidada de todos os prazos em aberto (de Oposição, Indeferimento, Exigência, Nulidade e dos despachos de Marcas/Patentes que geram prazo), ordenado por data fatal | Agregação das abas acima |
+
+### 11.3 Abas de configuração (a equipe edita sem precisar de mim)
+
+| Aba | Conteúdo |
+|---|---|
+| CONFIG_RPI | Última edição da RPI processada por seção (Marcas, Patentes, Desenho Industrial) — o script lê aqui antes de buscar a próxima edição |
+| CONFIG_DESPACHO_MARCA | Tabela "Despacho → Fase/Ação" de Marcas (seção 9.2), já fechada com os 9 despachos observados, editável para novos despachos |
+| CONFIG_DESPACHO_PATENTE | Tabela "Código → família/ação" de Patentes (seção 9.4) — não controla prazo (que é extraído dinamicamente do texto), só decide a qual fase/submódulo o despacho se refere |
+| CONFIG_ESTRATEGIA_INDEFERIMENTO | As 7 opções fixas + "Outro" (decisão da seção 8) |
+| CONFIG_TIPO_EXIGENCIA | As 5 opções fixas + "Outro" (decisão da seção 8) |
+
+### 11.4 Observação sobre a chave de vinculação
+
+O **número do processo** é a chave usada para ligar Processo de Registro
+↔ submódulos de fase ↔ histórico de despachos, conforme já recomendado no
+item 6 dos próximos passos. Como Marcas, Patentes e Desenho Industrial têm
+faixas de numeração diferentes (Marcas: números puramente numéricos de 9
+dígitos; Patentes: formato `BR NN NNNN NNNNNN-D`), não há risco de
+colisão entre módulos usando essa mesma chave.
