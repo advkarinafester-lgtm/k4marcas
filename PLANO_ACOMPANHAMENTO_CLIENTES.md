@@ -777,6 +777,26 @@ como pendente, sem travar o resto).
 | CONFIG_ESTRATEGIA_INDEFERIMENTO | As 7 opções fixas + "Outro" (decisão da seção 8) |
 | CONFIG_TIPO_EXIGENCIA | As 5 opções fixas + "Outro" (decisão da seção 8) |
 
+**Montadas como planilha real**: as duas primeiras já existem como arquivo
+`CONFIG_DESPACHOS_RPI.xlsx` (raiz do repositório), com uma aba para cada
+uma, prontas para importar/colar na planilha consolidada:
+
+- **CONFIG_DESPACHO_MARCA**: os 9 despachos da seção 9.2, com colunas
+  Despacho, Fase resultante, Gera prazo de ação?, Submódulo a abrir,
+  Observação.
+- **CONFIG_DESPACHO_PATENTE**: os **86 códigos reais** extraídos da edição
+  2893 (`Patente_2893_16062026.xml`), com colunas Código, Despacho
+  (título), Família, Fase resultante, Gera prazo (extração dinâmica)?,
+  Submódulo a abrir/atualizar, Observação. A coluna de prazo já vem
+  marcada com "Sim (extração dinâmica)" só nos 6 códigos onde o texto do
+  despacho trouxe um padrão de prazo consistente em **todas** as
+  ocorrências da edição analisada (`2.5`, `28.21`, `100.1`, `121`,
+  `15.22`, e parcialmente `1.5`) — os demais códigos de exigência/recurso/
+  arquivamento estão marcados como "Verificar texto", para a equipe
+  confirmar em mais edições antes de confiar 100% na extração automática.
+  CONFIG_ESTRATEGIA_INDEFERIMENTO e CONFIG_TIPO_EXIGENCIA ainda faltam
+  montar como arquivo (próxima complementação).
+
 ### 11.4 Observação sobre a chave de vinculação
 
 O **número do processo** é a chave usada para ligar Processo de Registro
