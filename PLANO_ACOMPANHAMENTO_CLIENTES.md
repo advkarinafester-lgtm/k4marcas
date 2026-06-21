@@ -596,6 +596,38 @@ do link real que você copiou do navegador. Esse padrão deve ser testado
 de fato dentro do Apps Script (que roda nos servidores do Google, sem
 essa restrição) antes de ir para produção.
 
+### 9.4 Estendendo a automação para Patentes e Desenho Industrial
+
+Você confirmou que essas duas seções da RPI também são prioridade agora.
+Os formatos disponíveis são diferentes do XML de Marcas, então o nível de
+automação muda para cada uma:
+
+**Seção VI Patentes — disponível em TXT**
+- Mesmo nível de automação da Seção V Marcas: `UrlFetchApp` baixa o
+  arquivo, o conteúdo é parseado por regex/posição de campo (formato TXT
+  estruturado), cruzado pelo número de processo com a base de Patentes
+  (módulo da seção 4 ainda a detalhar com você), e segue o mesmo fluxo de
+  atualização de fase + geração de prazo + aviso à equipe.
+- Falta confirmar com você um link de exemplo (igual fizemos com o
+  `RM2893.zip`) para eu travar o padrão de URL desta seção.
+
+**Seção III Desenho Industrial — só existe em PDF**
+- Você decidiu pela abordagem de **automação com revisão humana**: o
+  Apps Script baixa o PDF e tenta extrair o texto automaticamente (via
+  conversão do PDF para Google Doc pelo Drive, que faz OCR), pré-
+  preenchendo o histórico de despachos do processo — mas **toda linha
+  extraída de PDF entra marcada como "a confirmar"**, e o sistema só gera
+  prazo de ação automaticamente depois que alguém da equipe revisar e
+  validar aquele despacho. Isso evita que um erro de leitura de PDF (ex.:
+  um dígito errado no número do processo, ou um prazo mal interpretado)
+  vire uma perda de prazo real sem ninguém notar.
+- Esse fluxo de revisão precisa de uma aba/visão dedicada: "Despachos
+  pendentes de confirmação" — lista só os despachos extraídos de PDF
+  ainda não revisados, para a equipe checar rapidamente toda terça antes
+  de seguir com o resto do trabalho.
+- Falta confirmar com você um link de exemplo de PDF desta seção, para eu
+  avaliar a qualidade/formatação do PDF antes de desenhar a extração.
+
 ## 10. Próximos passos
 
 1. ~~Mapear os campos reais de Desenho Industrial, Patente e Monitoramento~~
@@ -623,3 +655,10 @@ essa restrição) antes de ir para produção.
 10. Testar o download via `UrlFetchApp` dentro do próprio Apps Script
     (servidor do Google, sem a restrição de rede desta sessão) para
     validar o padrão de URL na prática antes de ir para produção.
+11. Você me enviar um link de exemplo do TXT da Seção VI Patentes, para
+    eu confirmar o padrão de URL (seção 9.4).
+12. Você me enviar um link de exemplo do PDF da Seção III Desenho
+    Industrial, para eu avaliar a formatação antes de desenhar a extração
+    com revisão humana (seção 9.4).
+13. Desenhar a aba "Despachos pendentes de confirmação" para a revisão
+    manual dos despachos extraídos de PDF (Desenho Industrial).
