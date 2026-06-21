@@ -777,7 +777,7 @@ como pendente, sem travar o resto).
 | CONFIG_ESTRATEGIA_INDEFERIMENTO | As 7 opções fixas + "Outro" (decisão da seção 8) |
 | CONFIG_TIPO_EXIGENCIA | As 5 opções fixas + "Outro" (decisão da seção 8) |
 
-**Montadas como planilha real**: as duas primeiras já existem como arquivo
+**Montadas como planilha real**: as quatro já existem como arquivo
 `CONFIG_DESPACHOS_RPI.xlsx` (raiz do repositório), com uma aba para cada
 uma, prontas para importar/colar na planilha consolidada:
 
@@ -794,8 +794,10 @@ uma, prontas para importar/colar na planilha consolidada:
   `15.22`, e parcialmente `1.5`) — os demais códigos de exigência/recurso/
   arquivamento estão marcados como "Verificar texto", para a equipe
   confirmar em mais edições antes de confiar 100% na extração automática.
-  CONFIG_ESTRATEGIA_INDEFERIMENTO e CONFIG_TIPO_EXIGENCIA ainda faltam
-  montar como arquivo (próxima complementação).
+- **CONFIG_ESTRATEGIA_INDEFERIMENTO**: as 7 opções fixas + "Outro" da
+  seção 5.2/decisão 4 da seção 8.
+- **CONFIG_TIPO_EXIGENCIA**: as 5 opções fixas + "Outro" da seção
+  5.3/decisão 5 da seção 8.
 
 ### 11.4 Observação sobre a chave de vinculação
 
