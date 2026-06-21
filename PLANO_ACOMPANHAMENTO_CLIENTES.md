@@ -566,7 +566,7 @@ know-how do escritório):
 | Concessão de registro | Fase 4 (concluído) | Não — encerrar processo, comunicar cliente |
 | Indeferimento do pedido | Fase 4 (indeferido) | **Sim** — abre submódulo Indeferimento com prazo de recurso |
 | Sobrestamento do exame de mérito | Mantém fase atual | Não — apenas registrar, sem prazo |
-| Notificação de recurso | Depende do contexto (recurso de terceiro?) | **A confirmar com você** — pode abrir prazo de contrarrazões |
+| Notificação de recurso | Mantém o submódulo/fase em andamento | **Sim** — é a notificação que o INPI publica na RPI para iniciar a contagem do prazo de resposta; vale para qualquer procedimento em curso (oposição, exigência, recurso etc.), não é exclusiva de recurso. O script deve gerar/atualizar o prazo no submódulo que já estiver ativo para aquele processo; se não houver nenhum submódulo aberto ainda, criar um registro genérico de prazo para a equipe identificar a que procedimento se refere |
 | Petição de trâmite prioritário apta / atendida | Mantém fase atual | Não — só informativo |
 
 Esta tabela **não é exaustiva**: o INPI tem um catálogo mais amplo de
