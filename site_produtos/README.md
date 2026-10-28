@@ -21,8 +21,9 @@ e-mail sai da conta Google de quem publicar o site.
    - `Index`, `Estilo`, `Script`, `Produtos`, `Logo` (HTML — o editor
      adiciona o `.html` sozinho)
 4. Em ⚙️ **Configurações do projeto → Propriedades do script**, adicione:
-   - `EMAIL_ESCRITORIO` = e-mail que recebe as escolhas (aceita vários,
-     separados por vírgula). **Obrigatório.**
+   - `EMAIL_ESCRITORIO` = *(opcional)* só se quiser que as escolhas
+     cheguem em outro e-mail (aceita vários, separados por vírgula). Sem
+     essa propriedade, elas vão para **atendimento@k4brands.com.br**.
    - `PLANILHA_ID` = *(opcional)* ID de uma planilha Google (o trecho da
      URL entre `/d/` e `/edit`). Se definido, cada envio também é gravado
      na aba `SOLICITACOES_PRODUTOS` — serve de backup caso um e-mail se

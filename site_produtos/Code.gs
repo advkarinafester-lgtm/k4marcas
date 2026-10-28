@@ -152,10 +152,10 @@ function registrarNaPlanilha_(p, protocolo) {
   ]);
 }
 
+// Escolhas chegam no atendimento; a propriedade EMAIL_ESCRITORIO, se
+// definida, substitui esse destino sem precisar mexer no código.
 function getEmailEscritorio_() {
-  const email = PropertiesService.getScriptProperties().getProperty('EMAIL_ESCRITORIO');
-  if (!email) throw new Error('Site não configurado: defina a propriedade EMAIL_ESCRITORIO.');
-  return email;
+  return PropertiesService.getScriptProperties().getProperty('EMAIL_ESCRITORIO') || EMAIL_ACOMPANHAMENTO;
 }
 
 function escapar_(s) {
