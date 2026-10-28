@@ -1,18 +1,51 @@
 <script>
+  const TODAS = 'todas';
+  const LIMITE_TODAS = 300; // resultados exibidos de uma vez na busca em todas as classes
+  // Nome curto de cada classe (Classificação de Nice), só para orientar o cliente.
+  const TITULOS_CLASSES = {
+    1: 'Produtos químicos', 2: 'Tintas, vernizes e corantes', 3: 'Cosméticos e produtos de limpeza',
+    4: 'Óleos, lubrificantes e combustíveis', 5: 'Produtos farmacêuticos e veterinários',
+    6: 'Metais e produtos metálicos', 7: 'Máquinas e motores', 8: 'Ferramentas manuais e cutelaria',
+    9: 'Eletrônicos, informática e software', 10: 'Aparelhos médicos e odontológicos',
+    11: 'Iluminação, aquecimento, refrigeração e sanitários', 12: 'Veículos',
+    13: 'Armas e fogos de artifício', 14: 'Joias, bijuterias e relógios', 15: 'Instrumentos musicais',
+    16: 'Papel, papelaria e impressos', 17: 'Borracha, plásticos e isolantes', 18: 'Couro, bolsas e malas',
+    19: 'Materiais de construção não metálicos', 20: 'Móveis, espelhos e molduras',
+    21: 'Utensílios domésticos e de cozinha', 22: 'Cordas, redes, lonas e sacos', 23: 'Fios para uso têxtil',
+    24: 'Tecidos e roupa de cama e mesa', 25: 'Vestuário, calçados e chapéus', 26: 'Armarinho e aviamentos',
+    27: 'Tapetes e revestimentos de piso', 28: 'Jogos, brinquedos e artigos esportivos',
+    29: 'Carnes, laticínios e alimentos processados', 30: 'Café, massas, pães, doces e temperos',
+    31: 'Produtos agrícolas, frutas frescas e animais vivos', 32: 'Cervejas, águas e bebidas não alcoólicas',
+    33: 'Bebidas alcoólicas (exceto cervejas)', 34: 'Tabaco e artigos para fumantes',
+    35: 'Publicidade, gestão de negócios e comércio',
+  };
+
   const selecao = {}; // { "12": Set([...produtos]) }
   const el = id => document.getElementById(id);
   const semAcento = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
   const escapar = s => s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const nomeClasse = c => `Classe ${c}` + (TITULOS_CLASSES[c] ? ` · ${TITULOS_CLASSES[c]}` : '');
 
   const classes = Object.keys(PRODUTOS_POR_CLASSE).sort((a, b) => a - b);
+  const indiceBusca = {}; // textos sem acento, calculados uma vez por classe
+  el('classe').insertAdjacentHTML('beforeend', `<option value="${TODAS}">Todas as classes</option>`);
   classes.forEach(c => {
     selecao[c] = new Set();
-    el('classe').insertAdjacentHTML('beforeend', `<option value="${c}">Classe ${c}</option>`);
+    indiceBusca[c] = PRODUTOS_POR_CLASSE[c].map(semAcento);
+    el('classe').insertAdjacentHTML('beforeend', `<option value="${c}">${escapar(nomeClasse(c))}</option>`);
   });
 
+  // Lista de { classe, produto } que atendem à classe e à busca atuais.
   function produtosVisiveis() {
     const termo = semAcento(el('busca').value.trim());
-    return PRODUTOS_POR_CLASSE[el('classe').value].filter(p => !termo || semAcento(p).includes(termo));
+    const escolhida = el('classe').value;
+    const alvo = escolhida === TODAS ? classes : [escolhida];
+    if (escolhida === TODAS && !termo) return [];
+    const resultado = [];
+    alvo.forEach(c => PRODUTOS_POR_CLASSE[c].forEach((p, i) => {
+      if (!termo || indiceBusca[c][i].includes(termo)) resultado.push({ classe: c, produto: p });
+    }));
+    return resultado;
   }
 
   // Destaca o termo buscado sem depender de acentuação.
@@ -25,19 +58,36 @@
   }
 
   function renderizarLista() {
-    const classe = el('classe').value;
+    const escolhida = el('classe').value;
+    const todas = escolhida === TODAS;
     const termo = semAcento(el('busca').value.trim());
-    const itens = produtosVisiveis();
-    el('contagem-visiveis').textContent =
-      `${itens.length} de ${PRODUTOS_POR_CLASSE[classe].length} produtos exibidos`;
+    const encontrados = produtosVisiveis();
+    const itens = todas ? encontrados.slice(0, LIMITE_TODAS) : encontrados;
+
+    if (todas && !termo) {
+      el('contagem-visiveis').textContent = 'Digite o nome do produto para buscar em todas as classes';
+    } else if (todas) {
+      const nClasses = new Set(encontrados.map(x => x.classe)).size;
+      el('contagem-visiveis').textContent = encontrados.length > itens.length
+        ? `Mostrando ${itens.length} de ${encontrados.length} produtos em ${nClasses} classe(s). Refine a busca para ver os demais.`
+        : `${encontrados.length} produto(s) encontrado(s) em ${nClasses} classe(s)`;
+    } else {
+      el('contagem-visiveis').textContent =
+        `${itens.length} de ${PRODUTOS_POR_CLASSE[escolhida].length} produtos exibidos`;
+    }
+    el('acoes-lista').hidden = !itens.length;
+
     el('lista').innerHTML = itens.length
-      ? itens.map((p, i) => {
-          const marcado = selecao[classe].has(p);
+      ? itens.map((x, i) => {
+          const marcado = selecao[x.classe].has(x.produto);
+          const etiqueta = todas ? `<span class="etiqueta-classe">Classe ${x.classe}</span>` : '';
           return `<li><label class="${marcado ? 'marcado' : ''}">` +
             `<input type="checkbox" data-i="${i}" ${marcado ? 'checked' : ''}>` +
-            `<span>${destacar(p, termo)}</span></label></li>`;
+            `<span>${destacar(x.produto, termo)}${etiqueta}</span></label></li>`;
         }).join('')
-      : '<li class="vazio">Nenhum produto encontrado. Se não estiver na lista, descreva-o no campo abaixo.</li>';
+      : todas && !termo
+        ? '<li class="vazio">Use a busca acima (ex.: "camiseta", "software", "café") ou escolha uma classe específica.</li>'
+        : '<li class="vazio">Nenhum produto encontrado. Se não estiver na lista, descreva-o no campo abaixo.</li>';
     el('lista').itens = itens;
   }
 
@@ -48,7 +98,7 @@
       const chips = [...selecao[c]].sort((a, b) => a.localeCompare(b, 'pt-BR')).map(p =>
         `<span class="chip">${escapar(p)}<button type="button" title="Remover" ` +
         `data-classe="${c}" data-produto="${escapar(p)}">×</button></span>`).join('');
-      return `<h3>Classe ${c} — ${selecao[c].size} item(ns)</h3><div class="chips">${chips}</div>`;
+      return `<h3>${escapar(nomeClasse(c))} — ${selecao[c].size} item(ns)</h3><div class="chips">${chips}</div>`;
     });
     el('resumo').innerHTML = blocos.length ? blocos.join('') : '<p>Nenhum produto selecionado ainda.</p>';
     el('total-selecionados').textContent = total;
@@ -57,9 +107,8 @@
   function atualizar() { renderizarLista(); renderizarResumo(); }
 
   el('lista').addEventListener('change', e => {
-    const p = el('lista').itens[e.target.dataset.i];
-    const conjunto = selecao[el('classe').value];
-    e.target.checked ? conjunto.add(p) : conjunto.delete(p);
+    const x = el('lista').itens[e.target.dataset.i];
+    e.target.checked ? selecao[x.classe].add(x.produto) : selecao[x.classe].delete(x.produto);
     e.target.closest('label').classList.toggle('marcado', e.target.checked);
     renderizarResumo();
   });
@@ -71,16 +120,22 @@
     atualizar();
   });
 
+  // Age só sobre o que está na tela (na busca em todas as classes, no máximo LIMITE_TODAS).
   el('marcar-visiveis').addEventListener('click', () => {
-    produtosVisiveis().forEach(p => selecao[el('classe').value].add(p));
+    el('lista').itens.forEach(x => selecao[x.classe].add(x.produto));
     atualizar();
   });
   el('desmarcar-visiveis').addEventListener('click', () => {
-    produtosVisiveis().forEach(p => selecao[el('classe').value].delete(p));
+    el('lista').itens.forEach(x => selecao[x.classe].delete(x.produto));
     atualizar();
   });
+
+  let atrasoBusca;
   el('classe').addEventListener('change', renderizarLista);
-  el('busca').addEventListener('input', renderizarLista);
+  el('busca').addEventListener('input', () => {
+    clearTimeout(atrasoBusca);
+    atrasoBusca = setTimeout(renderizarLista, 120);
+  });
 
   function mostrarErro(texto) {
     el('mensagem').textContent = texto;

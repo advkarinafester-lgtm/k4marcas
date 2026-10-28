@@ -46,11 +46,14 @@ original `imagens/logo-k4-original.png`).
 
 ## Adicionando outras classes
 
-A lista de produtos vem dos PDFs em `listas/` (hoje só a **Classe 12**).
-Para incluir outra classe:
+A lista de produtos vem dos PDFs em `listas/` — hoje as **classes 1 a 35**
+(12.752 produtos). O site também permite buscar em todas as classes ao
+mesmo tempo. Para incluir outra classe (ex.: serviços, 36 a 45):
 
-1. Salve o PDF como `listas/Classe_NN.pdf` (mesmo formato do exemplo: um
-   item por linha começando com `- `).
+1. Salve o PDF como `listas/Classe_NN.pdf` (um item por linha, começando
+   ou não com `- `; itens quebrados em duas linhas são juntados sozinhos).
+   Se quiser, acrescente o nome curto da classe em `TITULOS_CLASSES`
+   (`Script.html`).
 2. Rode `python3 site_produtos/ferramentas/gerar_produtos.py` (precisa do
    `pdftotext`, pacote `poppler-utils`).
 3. Cole o novo `Produtos.html` no projeto do Apps Script e publique uma

@@ -49,17 +49,22 @@
 
       <section class="cartao">
         <h2><span class="passo">2</span> Produtos</h2>
+        <div class="atencao" role="note">
+          <b>Atenção na escolha:</b> o INPI pode fazer exigência para comprovar a atividade lícita da sua
+          operação. Por isso, selecione apenas os produtos compatíveis com a atividade que você exerce, para
+          evitar exigências e atrasos no processo.
+        </div>
         <div class="controles">
           <label>Classe
             <select id="classe"></select>
           </label>
           <label class="busca">Buscar produto
-            <input id="busca" type="search" placeholder="Ex.: bicicleta, pneu, barco…">
+            <input id="busca" type="search" placeholder="Ex.: camiseta, café, software…">
           </label>
         </div>
         <div class="barra-lista">
           <span id="contagem-visiveis"></span>
-          <span>
+          <span id="acoes-lista">
             <button type="button" class="link" id="marcar-visiveis">Marcar os exibidos</button>
             ·
             <button type="button" class="link" id="desmarcar-visiveis">Desmarcar os exibidos</button>
@@ -78,6 +83,9 @@
         <label class="largo">Observações
           <textarea name="observacoes" rows="3"></textarea>
         </label>
+        <p class="proximos">Assim que você confirmar, seguimos com o protocolo no INPI, e a confirmação será
+          enviada ao seu e-mail pelo nosso canal de acompanhamento: <b>atendimento@k4brands.com.br</b>.
+          <a href="https://k4marcas.com.br/fases-de-analise-do-inpi-o-processo-de-registro-de-marca-no-brasil/" target="_blank" rel="noopener">Confira todas as fases do seu processo aqui</a>.</p>
         <p id="mensagem" class="mensagem" role="alert" hidden></p>
         <button type="submit" id="enviar" class="botao">Enviar escolha</button>
       </section>
@@ -87,6 +95,9 @@
       <h2>Escolha enviada!</h2>
       <p>Enviamos uma cópia para <b id="sucesso-email"></b> e para o nosso escritório.
         Protocolo: <b id="sucesso-protocolo"></b>.</p>
+      <p class="proximos">Agora seguimos com o protocolo no INPI, e a confirmação será
+        enviada ao seu e-mail pelo nosso canal de acompanhamento: <b>atendimento@k4brands.com.br</b>.
+        <a href="https://k4marcas.com.br/fases-de-analise-do-inpi-o-processo-de-registro-de-marca-no-brasil/" target="_blank" rel="noopener">Confira todas as fases do seu processo aqui</a>.</p>
       <p>Se não encontrar o e-mail, confira a caixa de spam.</p>
     </section>
   </main>

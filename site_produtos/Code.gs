@@ -5,6 +5,8 @@
 const NOME_ESCRITORIO = 'K4 Marcas';
 const ABA_SOLICITACOES = 'SOLICITACOES_PRODUTOS';
 const MAX_PRODUTOS = 1000;
+const EMAIL_ACOMPANHAMENTO = 'atendimento@k4brands.com.br';
+const LINK_FASES_INPI = 'https://k4marcas.com.br/fases-de-analise-do-inpi-o-processo-de-registro-de-marca-no-brasil/';
 
 function doGet() {
   return HtmlService.createTemplateFromFile('Index')
@@ -35,7 +37,10 @@ function enviarSelecao(dados) {
       `<p>Olá, ${escapar_(pedido.nome)}!</p>` +
       `<p>Recebemos a sua escolha de produtos/serviços para o registro da marca. ` +
       `Nossa equipe vai analisar e entrar em contato. Confira abaixo o que foi enviado:</p>` +
-      corpo,
+      corpo +
+      `<p style="font-family:Arial,sans-serif;font-size:14px;margin-top:20px">Assim que você confirmar, seguimos com ` +
+      `o protocolo no INPI, e a confirmação será enviada ao seu e-mail pelo nosso canal de acompanhamento: ` +
+      `<b>${EMAIL_ACOMPANHAMENTO}</b>. <a href="${LINK_FASES_INPI}">Confira todas as fases do seu processo aqui</a>.</p>`,
     name: NOME_ESCRITORIO,
     replyTo: emailEscritorio,
   });
