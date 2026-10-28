@@ -101,7 +101,7 @@ function montarEmailHtml_(p, protocolo) {
 
   const classes = Object.keys(p.selecao).sort((a, b) => a - b);
   const blocos = classes.map(c =>
-    `<h3 style="margin:16px 0 4px">Classe ${c} — ${p.selecao[c].length} item(ns)</h3>` +
+    `<h3 style="margin:16px 0 4px;color:#8321b7">Classe ${c} — ${p.selecao[c].length} item(ns)</h3>` +
     `<ul style="margin:0;padding-left:20px">${p.selecao[c].map(i => `<li>${escapar_(i)}</li>`).join('')}</ul>`
   ).join('');
 
@@ -109,7 +109,8 @@ function montarEmailHtml_(p, protocolo) {
     valor ? `<h3 style="margin:16px 0 4px">${titulo}</h3><p style="white-space:pre-wrap;margin:0">${escapar_(valor)}</p>` : '';
 
   return (
-    `<div style="font-family:Arial,sans-serif;font-size:14px;color:#222">` +
+    `<div style="font-family:Arial,sans-serif;font-size:14px;color:#222;border-top:4px solid #8321b7;padding-top:12px">` +
+    `<p style="margin:0 0 12px;font-size:16px;font-weight:bold;color:#3b0ca4">K4 Marcas · <span style="color:#e5176b">Propriedade Intelectual</span></p>` +
     `<table style="border-collapse:collapse">` +
     linha('Protocolo', protocolo) +
     linha('Marca', p.marca) +

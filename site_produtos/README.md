@@ -18,8 +18,8 @@ e-mail sai da conta Google de quem publicar o site.
    manifesto appsscript.json"* e cole o conteúdo de `appsscript.json`.
 3. Crie os arquivos com os mesmos nomes desta pasta e cole o conteúdo:
    - `Code.gs` (Script)
-   - `Index`, `Estilo`, `Script`, `Produtos` (HTML — o editor adiciona o
-     `.html` sozinho)
+   - `Index`, `Estilo`, `Script`, `Produtos`, `Logo` (HTML — o editor
+     adiciona o `.html` sozinho)
 4. Em ⚙️ **Configurações do projeto → Propriedades do script**, adicione:
    - `EMAIL_ESCRITORIO` = e-mail que recebe as escolhas (aceita vários,
      separados por vírgula). **Obrigatório.**
@@ -36,6 +36,13 @@ e-mail sai da conta Google de quem publicar o site.
 
 Para alterar algo depois: edite os arquivos e use **Implantar → Gerenciar
 implantações → ✏️ → Versão: Nova versão** (a URL continua a mesma).
+
+## Identidade visual
+
+Cores da K4 (roxo `#8321b7`, rosa `#e5176b`, índigo `#3b0ca4` e preto)
+ficam no topo de `Estilo.html`. O logo está embutido em `Logo.html`
+(gerado de `imagens/logo-k4.png`, versão com fundo transparente do logo
+original `imagens/logo-k4-original.png`).
 
 ## Adicionando outras classes
 
