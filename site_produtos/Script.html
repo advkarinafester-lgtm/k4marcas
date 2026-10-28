@@ -1,0 +1,128 @@
+<script>
+  const selecao = {}; // { "12": Set([...produtos]) }
+  const el = id => document.getElementById(id);
+  const semAcento = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  const escapar = s => s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  const classes = Object.keys(PRODUTOS_POR_CLASSE).sort((a, b) => a - b);
+  classes.forEach(c => {
+    selecao[c] = new Set();
+    el('classe').insertAdjacentHTML('beforeend', `<option value="${c}">Classe ${c}</option>`);
+  });
+
+  function produtosVisiveis() {
+    const termo = semAcento(el('busca').value.trim());
+    return PRODUTOS_POR_CLASSE[el('classe').value].filter(p => !termo || semAcento(p).includes(termo));
+  }
+
+  // Destaca o termo buscado sem depender de acentuação.
+  function destacar(texto, termo) {
+    if (!termo) return escapar(texto);
+    const i = semAcento(texto).indexOf(termo);
+    if (i < 0) return escapar(texto);
+    return escapar(texto.slice(0, i)) + '<mark>' + escapar(texto.slice(i, i + termo.length)) + '</mark>' +
+      escapar(texto.slice(i + termo.length));
+  }
+
+  function renderizarLista() {
+    const classe = el('classe').value;
+    const termo = semAcento(el('busca').value.trim());
+    const itens = produtosVisiveis();
+    el('contagem-visiveis').textContent =
+      `${itens.length} de ${PRODUTOS_POR_CLASSE[classe].length} produtos exibidos`;
+    el('lista').innerHTML = itens.length
+      ? itens.map((p, i) => {
+          const marcado = selecao[classe].has(p);
+          return `<li><label class="${marcado ? 'marcado' : ''}">` +
+            `<input type="checkbox" data-i="${i}" ${marcado ? 'checked' : ''}>` +
+            `<span>${destacar(p, termo)}</span></label></li>`;
+        }).join('')
+      : '<li class="vazio">Nenhum produto encontrado. Se não estiver na lista, descreva-o no campo abaixo.</li>';
+    el('lista').itens = itens;
+  }
+
+  function renderizarResumo() {
+    let total = 0;
+    const blocos = classes.filter(c => selecao[c].size).map(c => {
+      total += selecao[c].size;
+      const chips = [...selecao[c]].sort((a, b) => a.localeCompare(b, 'pt-BR')).map(p =>
+        `<span class="chip">${escapar(p)}<button type="button" title="Remover" ` +
+        `data-classe="${c}" data-produto="${escapar(p)}">×</button></span>`).join('');
+      return `<h3>Classe ${c} — ${selecao[c].size} item(ns)</h3><div class="chips">${chips}</div>`;
+    });
+    el('resumo').innerHTML = blocos.length ? blocos.join('') : '<p>Nenhum produto selecionado ainda.</p>';
+    el('total-selecionados').textContent = total;
+  }
+
+  function atualizar() { renderizarLista(); renderizarResumo(); }
+
+  el('lista').addEventListener('change', e => {
+    const p = el('lista').itens[e.target.dataset.i];
+    const conjunto = selecao[el('classe').value];
+    e.target.checked ? conjunto.add(p) : conjunto.delete(p);
+    e.target.closest('label').classList.toggle('marcado', e.target.checked);
+    renderizarResumo();
+  });
+
+  el('resumo').addEventListener('click', e => {
+    const b = e.target.closest('button[data-produto]');
+    if (!b) return;
+    selecao[b.dataset.classe].delete(b.dataset.produto);
+    atualizar();
+  });
+
+  el('marcar-visiveis').addEventListener('click', () => {
+    produtosVisiveis().forEach(p => selecao[el('classe').value].add(p));
+    atualizar();
+  });
+  el('desmarcar-visiveis').addEventListener('click', () => {
+    produtosVisiveis().forEach(p => selecao[el('classe').value].delete(p));
+    atualizar();
+  });
+  el('classe').addEventListener('change', renderizarLista);
+  el('busca').addEventListener('input', renderizarLista);
+
+  function mostrarErro(texto) {
+    el('mensagem').textContent = texto;
+    el('mensagem').hidden = !texto;
+  }
+
+  el('formulario').addEventListener('submit', e => {
+    e.preventDefault();
+    const f = e.target;
+    const dados = Object.fromEntries(new FormData(f));
+    dados.selecao = {};
+    classes.forEach(c => { if (selecao[c].size) dados.selecao[c] = [...selecao[c]]; });
+
+    for (const campo of ['nome', 'email', 'marca']) {
+      if (!f[campo].checkValidity()) {
+        f[campo].focus();
+        return mostrarErro('Preencha os campos obrigatórios (*) com dados válidos.');
+      }
+    }
+    if (!Object.keys(dados.selecao).length && !dados.outros.trim()) {
+      return mostrarErro('Selecione ao menos um produto ou descreva-o no campo "Outros produtos".');
+    }
+
+    mostrarErro('');
+    el('enviar').disabled = true;
+    el('enviar').textContent = 'Enviando…';
+    google.script.run
+      .withSuccessHandler(r => {
+        f.hidden = true;
+        document.querySelector('.rodape-fixo').hidden = true;
+        el('sucesso-email').textContent = dados.email;
+        el('sucesso-protocolo').textContent = r.protocolo || '-';
+        el('sucesso').hidden = false;
+        window.scrollTo(0, 0);
+      })
+      .withFailureHandler(err => {
+        el('enviar').disabled = false;
+        el('enviar').textContent = 'Enviar escolha';
+        mostrarErro((err && err.message) || 'Não foi possível enviar. Tente novamente.');
+      })
+      .enviarSelecao(dados);
+  });
+
+  atualizar();
+</script>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>K4 Marcas — Produtos para registro de marca</title>
+  <?!= include('Estilo'); ?>
+</head>
+<body>
+  <header class="topo">
+    <div class="topo-conteudo">
+      <span class="logo">K4 Marcas</span>
+      <h1>Escolha dos produtos para o registro da sua marca</h1>
+      <p>Marque os produtos que a sua marca identifica (ou vai identificar). Ao final, a lista é enviada
+        automaticamente para o seu e-mail e para o nosso escritório.</p>
+    </div>
+  </header>
+
+  <main>
+    <form id="formulario" novalidate>
+      <section class="cartao">
+        <h2><span class="passo">1</span> Seus dados</h2>
+        <div class="grade">
+          <label>Nome completo / Razão social *
+            <input name="nome" required autocomplete="name">
+          </label>
+          <label>CPF / CNPJ
+            <input name="documento" inputmode="numeric">
+          </label>
+          <label>E-mail *
+            <input name="email" type="email" required autocomplete="email">
+          </label>
+          <label>Telefone / WhatsApp
+            <input name="telefone" type="tel" autocomplete="tel">
+          </label>
+          <label class="largo">Nome da marca *
+            <input name="marca" required>
+          </label>
+        </div>
+        <!-- Campo invisível para barrar robôs de spam. -->
+        <input name="site" class="armadilha" tabindex="-1" autocomplete="off" aria-hidden="true">
+      </section>
+
+      <section class="cartao">
+        <h2><span class="passo">2</span> Produtos</h2>
+        <div class="controles">
+          <label>Classe
+            <select id="classe"></select>
+          </label>
+          <label class="busca">Buscar produto
+            <input id="busca" type="search" placeholder="Ex.: bicicleta, pneu, barco…">
+          </label>
+        </div>
+        <div class="barra-lista">
+          <span id="contagem-visiveis"></span>
+          <span>
+            <button type="button" class="link" id="marcar-visiveis">Marcar os exibidos</button>
+            ·
+            <button type="button" class="link" id="desmarcar-visiveis">Desmarcar os exibidos</button>
+          </span>
+        </div>
+        <ul id="lista" class="lista"></ul>
+
+        <label class="largo">Outros produtos ou serviços que não estão na lista
+          <textarea name="outros" rows="3" placeholder="Descreva aqui, um por linha"></textarea>
+        </label>
+      </section>
+
+      <section class="cartao">
+        <h2><span class="passo">3</span> Revisar e enviar</h2>
+        <div id="resumo" class="resumo"></div>
+        <label class="largo">Observações
+          <textarea name="observacoes" rows="3"></textarea>
+        </label>
+        <p id="mensagem" class="mensagem" role="alert" hidden></p>
+        <button type="submit" id="enviar" class="botao">Enviar escolha</button>
+      </section>
+    </form>
+
+    <section id="sucesso" class="cartao sucesso" hidden>
+      <h2>Escolha enviada!</h2>
+      <p>Enviamos uma cópia para <b id="sucesso-email"></b> e para o nosso escritório.
+        Protocolo: <b id="sucesso-protocolo"></b>.</p>
+      <p>Se não encontrar o e-mail, confira a caixa de spam.</p>
+    </section>
+  </main>
+
+  <div class="rodape-fixo">
+    <span><b id="total-selecionados">0</b> produto(s) selecionado(s)</span>
+    <a href="#resumo" class="link">Ver resumo</a>
+  </div>
+
+  <?!= include('Produtos'); ?>
+  <?!= include('Script'); ?>
+</body>
+</html>
