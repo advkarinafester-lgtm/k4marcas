@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gerador de Propostas | K4 Marcas</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="icon" href="assets/icone-k4.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .gen { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 28px; padding: 48px 0 80px; align-items: start; }
+    .box { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 28px; }
+    .box h2 { font-size: 20px; margin-bottom: 18px; }
+    .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .full { grid-column: 1 / -1; }
+    label.f { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--muted); font-weight: 600; }
+    .f input, .f select, .f textarea {
+      font: inherit; font-size: 15px; color: var(--text); background: #120c18; border: 1px solid #3a3043;
+      border-radius: 10px; padding: 12px 14px; width: 100%;
+    }
+    .f textarea { min-height: 76px; resize: vertical; }
+    .f input:focus, .f select:focus, .f textarea:focus { outline: 2px solid var(--magenta); outline-offset: 0; border-color: transparent; }
+    .checks { display: flex; flex-wrap: wrap; gap: 10px 18px; font-size: 14px; color: var(--text); }
+    .checks label { display: flex; gap: 8px; align-items: center; cursor: pointer; }
+    .checks input { accent-color: var(--magenta); width: 18px; height: 18px; }
+    .hint { font-size: 12px; color: var(--dim); font-weight: 500; }
+    .out { position: sticky; top: 88px; display: grid; gap: 18px; }
+    .link { font-family: ui-monospace, Menlo, monospace; font-size: 12px; word-break: break-all; background: #120c18; border: 1px solid #3a3043; border-radius: 10px; padding: 12px; color: #ffd0de; max-height: 120px; overflow: auto; }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+    .row .btn { flex: 1 1 auto; }
+    .mini { display: grid; gap: 8px; font-size: 14px; }
+    .mini div { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px dashed var(--line); padding-bottom: 8px; }
+    .mini span { color: var(--muted); }
+    .mini .t { font-family: var(--head); font-size: 18px; border: 0; }
+    .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #1fae5b; color: #fff; padding: 12px 20px; border-radius: 999px; font-weight: 600; font-size: 14px; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 99; }
+    .toast.on { opacity: 1; }
+    @media (max-width: 900px) { .gen { grid-template-columns: 1fr; } .out { position: static; } .fields { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+<nav class="nav">
+  <div class="wrap">
+    <a class="nav-brand" href="index.html"><img src="assets/icone-k4.png" alt="" /><b>K4</b><span>MARCAS</span></a>
+    <span class="hint" style="font-size:13px">Uso interno · Gerador de propostas</span>
+  </div>
+</nav>
+
+<main class="wrap">
+  <div style="padding-top:48px">
+    <span class="eyebrow">Uso interno</span>
+    <h1 class="h2">Gerar proposta para o cliente</h1>
+    <p class="lead" style="margin-top:12px">Preencha os dados, copie o link e envie ao cliente. A página da proposta abre já personalizada com o nome, a marca, o plano recomendado e as condições.</p>
+  </div>
+
+  <div class="gen">
+    <form class="box" id="form" autocomplete="off" onsubmit="return false">
+      <h2>Dados da proposta</h2>
+      <div class="fields">
+        <label class="f">Nome do cliente / empresa<input name="c" placeholder="Ex.: Maria Silva" /></label>
+        <label class="f">Marca a registrar<input name="m" placeholder="Ex.: Use Lua" /></label>
+        <label class="f">Número de classes
+          <select name="cl"><option value="1">1 classe</option><option value="2">2 classes</option><option value="3">3 classes</option></select>
+        </label>
+        <label class="f">Plano recomendado
+          <select name="p" id="planSel"></select>
+        </label>
+        <div class="f full">Planos exibidos ao cliente
+          <div class="checks" id="po"></div>
+        </div>
+        <label class="f">Desconto nos honorários (%)<input name="d" type="number" min="0" max="100" step="1" value="0" /><span class="hint">Ex.: 20 para a campanha “fechando no mês – 20% OFF”.</span></label>
+        <label class="f">Válida até<input name="v" type="date" /></label>
+        <label class="f">Consultor(a) responsável<input name="r" placeholder="Ex.: Aline Miranda" /></label>
+        <label class="f">WhatsApp do cliente (opcional)<input name="tel" inputmode="tel" placeholder="(11) 99999-9999" /><span class="hint">Para abrir a conversa já com o link.</span></label>
+        <div class="f full">Trâmite prioritário (Portaria INPI 066/2026)
+          <div class="checks">
+            <label><input type="checkbox" name="pr" checked /> Mostrar como opcional</label>
+            <label><input type="checkbox" name="prOn" /> Já deixar marcado</label>
+          </div>
+        </div>
+        <label class="f full">Observações (aparecem no rodapé do investimento)<textarea name="o" placeholder="Ex.: Proposta inclui análise para as classes 25 e 35."></textarea></label>
+      </div>
+    </form>
+
+    <aside class="out">
+      <div class="box">
+        <h2>Link da proposta</h2>
+        <div class="link" id="link"></div>
+        <div class="row">
+          <button class="btn" type="button" id="copy">Copiar link</button>
+          <a class="btn ghost" id="open" target="_blank" rel="noopener">Abrir prévia</a>
+        </div>
+        <div class="row">
+          <a class="btn wa" id="send" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2z"/></svg>Enviar pelo WhatsApp</a>
+          <button class="btn ghost" type="button" id="copyMsg">Copiar mensagem</button>
+        </div>
+      </div>
+      <div class="box">
+        <h2>Conferência de valores</h2>
+        <div class="mini" id="mini"></div>
+      </div>
+    </aside>
+  </div>
+</main>
+<div class="toast" id="toast">Copiado!</div>
+
+<script src="config.js"></script>
+<script>
+(function () {
+  "use strict";
+  var CFG = window.K4_CONFIG;
+  var f = document.getElementById("form");
+  var BRL = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
+
+  // defaults
+  var d = new Date();
+  var last = new Date(d.getFullYear(), d.getMonth() + 1, 0);
+  f.v.value = last.getFullYear() + "-" + String(last.getMonth() + 1).padStart(2, "0") + "-" + String(last.getDate()).padStart(2, "0");
+
+  var sel = document.getElementById("planSel");
+  var po = document.getElementById("po");
+  CFG.planos.forEach(function (p) {
+    var o = document.createElement("option"); o.value = p.id; o.textContent = p.nome; sel.appendChild(o);
+    var l = document.createElement("label");
+    l.innerHTML = '<input type="checkbox" name="po" value="' + p.id + '" checked /> ' + p.nome;
+    po.appendChild(l);
+  });
+  sel.value = "intermediario";
+
+  // restore last consultant
+  try { var rc = localStorage.getItem("k4_consultor"); if (rc) f.r.value = rc; } catch (e) {}
+
+  function encode(obj) {
+    var bytes = new TextEncoder().encode(JSON.stringify(obj));
+    var bin = ""; bytes.forEach(function (b) { bin += String.fromCharCode(b); });
+    return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  }
+  function baseUrl() { return location.href.replace(/[^\/]*([?#].*)?$/, "") + "index.html"; }
+
+  var current = { link: "", msg: "" };
+
+  function update() {
+    var offered = Array.prototype.slice.call(f.querySelectorAll('input[name="po"]:checked')).map(function (i) { return i.value; });
+    if (offered.length && offered.indexOf(sel.value) < 0) sel.value = offered[0];
+    var data = {
+      c: f.c.value.trim(), m: f.m.value.trim(), cl: +f.cl.value, p: sel.value,
+      d: Math.min(100, Math.max(0, +f.d.value || 0)), v: f.v.value,
+      e: new Date().toISOString().slice(0, 10), r: f.r.value.trim(),
+      pr: f.pr.checked ? 1 : 0, prOn: f.prOn.checked && f.pr.checked ? 1 : 0,
+    };
+    if (offered.length && offered.length < CFG.planos.length) data.po = offered;
+    if (f.o.value.trim()) data.o = f.o.value.trim();
+    Object.keys(data).forEach(function (k) { if (data[k] === "" ) delete data[k]; });
+
+    var link = baseUrl() + "?p=" + encode(data);
+    current.link = link;
+    document.getElementById("link").textContent = link;
+    document.getElementById("open").href = link;
+
+    var nome = data.c ? data.c.split(" ")[0] : "";
+    var msg = "Olá" + (nome ? ", " + nome : "") + "! Tudo bem?\n\n" +
+      "Aqui é " + (data.r ? data.r + ", da " : "a equipe da ") + "K4 Marcas. Preparamos a sua proposta" +
+      (data.m ? " para o registro da marca *" + data.m + "*" : " de registro de marca") + ".\n\n" +
+      "É só abrir o link abaixo para ver os planos, simular as classes e aceitar direto pelo WhatsApp:\n" + link +
+      (data.v ? "\n\nCondições válidas até " + data.v.split("-").reverse().join("/") + (data.d ? " (" + data.d + "% OFF nos honorários)" : "") + "." : "") +
+      "\n\nQualquer dúvida, estou à disposição!";
+    current.msg = msg;
+    var tel = f.tel.value.replace(/\D/g, "");
+    if (tel && tel.length <= 11) tel = "55" + tel;
+    document.getElementById("send").href = "https://wa.me/" + tel + "?text=" + encodeURIComponent(msg);
+
+    // mini summary
+    var p = CFG.planos.filter(function (x) { return x.id === data.p; })[0];
+    var parc = p.parcela[data.cl] * (1 - data.d / 100);
+    var taxa = CFG.taxaInpiPorClasse * data.cl + (data.prOn ? CFG.prioritario.taxaInpiPorClasse * data.cl : 0);
+    var prio = data.prOn ? CFG.prioritario.honorariosPorClasse * data.cl : 0;
+    document.getElementById("mini").innerHTML =
+      "<div><span>Plano</span><b>" + p.nome + " · " + data.cl + (data.cl > 1 ? " classes" : " classe") + "</b></div>" +
+      "<div><span>Parcela</span><b>" + CFG.parcelas + "x " + BRL.format(parc) + (data.d ? " <s style='color:var(--dim);font-weight:500'>" + BRL.format(p.parcela[data.cl]) + "</s>" : "") + "</b></div>" +
+      "<div><span>Honorários</span><b>" + BRL.format(parc * CFG.parcelas) + "</b></div>" +
+      (prio ? "<div><span>Trâmite prioritário</span><b>" + BRL.format(prio) + "</b></div>" : "") +
+      "<div><span>Taxas INPI</span><b>" + BRL.format(taxa) + "</b></div>" +
+      "<div class='t'><span>Total estimado</span><b>" + BRL.format(parc * CFG.parcelas + prio + taxa) + "</b></div>";
+
+    try { localStorage.setItem("k4_consultor", data.r || ""); } catch (e) {}
+  }
+
+  function toast(t) {
+    var el = document.getElementById("toast"); el.textContent = t; el.classList.add("on");
+    setTimeout(function () { el.classList.remove("on"); }, 1600);
+  }
+  function copy(text, ok) {
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(function () { toast(ok); }, fallback);
+    else fallback();
+    function fallback() {
+      var ta = document.createElement("textarea"); ta.value = text; document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); toast(ok); } catch (e) { prompt("Copie:", text); }
+      ta.remove();
+    }
+  }
+  document.getElementById("copy").addEventListener("click", function () { copy(current.link, "Link copiado!"); });
+  document.getElementById("copyMsg").addEventListener("click", function () { copy(current.msg, "Mensagem copiada!"); });
+  f.addEventListener("input", update);
+  f.addEventListener("change", update);
+  update();
+})();
+</script>
+</body>
+</html>
