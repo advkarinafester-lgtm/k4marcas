@@ -105,11 +105,11 @@
     } else {
       var dias = Math.round((new Date(state.validade + "T23:59:59") - new Date()) / 864e5);
       vEl.textContent = "Condições válidas até " + fmtDate(state.validade) + (dias <= 7 ? " — faltam " + Math.max(dias, 0) + (dias === 1 ? " dia" : " dias") : "") +
-        (state.desconto ? " · " + num(state.desconto).replace(",00", "") + "% OFF nos honorários" : "");
+        (state.desconto ? " · " + num(state.desconto).replace(",00", "") + "% OFF no plano" : "");
     }
   } else if (state.desconto) {
     vEl.hidden = false;
-    vEl.textContent = num(state.desconto).replace(",00", "") + "% OFF nos honorários aplicado nesta proposta";
+    vEl.textContent = num(state.desconto).replace(",00", "") + "% OFF nos honorários do plano aplicado nesta proposta";
   }
 
   if (!state.ofertaPrio) $("#addon").hidden = true;
@@ -186,15 +186,25 @@
   // ---------- pricing ----------
   function parcelaCheia(id) { return plan(id).parcela[state.classes]; }
   function parcela(id) { return parcelaCheia(id) * (1 - state.desconto / 100); }
+  // Trâmite prioritário: somado aos honorários do plano e parcelado no mesmo nº de parcelas.
+  function prioTotal() {
+    var v = CFG.prioritario.honorariosPorClasse * state.classes;
+    return CFG.prioritario.descontoAplica ? v * (1 - state.desconto / 100) : v;
+  }
 
   function calc() {
     var pc = parcelaCheia(state.plano);
     var pd = parcela(state.plano);
     var honorCheio = pc * CFG.parcelas;
     var honor = pd * CFG.parcelas;
-    var prioHon = state.ofertaPrio && state.prio ? CFG.prioritario.honorariosPorClasse * state.classes : 0;
-    var taxa = CFG.taxaInpiPorClasse * state.classes + (state.ofertaPrio && state.prio ? CFG.prioritario.taxaInpiPorClasse * state.classes : 0);
-    return { pc: pc, pd: pd, honorCheio: honorCheio, honor: honor, desc: honorCheio - honor, prioHon: prioHon, taxa: taxa, total: honor + prioHon + taxa };
+    var comPrio = state.ofertaPrio && state.prio;
+    var prioHon = comPrio ? prioTotal() : 0;
+    var taxaBase = CFG.taxaInpiPorClasse * state.classes;
+    var taxaPrio = comPrio ? CFG.prioritario.taxaInpiPorClasse * state.classes : 0;
+    var taxa = taxaBase + taxaPrio;
+    var parcelaFinal = pd + prioHon / CFG.parcelas;
+    return { pc: pc, pd: pd, honorCheio: honorCheio, honor: honor, desc: honorCheio - honor, prioHon: prioHon,
+      taxaBase: taxaBase, taxaPrio: taxaPrio, taxa: taxa, parcelaFinal: parcelaFinal, honorTotal: honor + prioHon, total: honor + prioHon + taxa };
   }
 
   // ---------- WhatsApp ----------
@@ -211,7 +221,8 @@
       el.tabIndex = sel ? 0 : -1;
       $("[data-price]", el).textContent = num(parcela(id));
       $("[data-old]", el).textContent = state.desconto ? CFG.parcelas + "x " + num(parcelaCheia(id)) : "";
-      $("[data-total]", el).textContent = "Total de honorários: " + brl(parcela(id) * CFG.parcelas);
+      $("[data-total]", el).textContent = "Total de honorários: " + brl(parcela(id) * CFG.parcelas) +
+        (state.ofertaPrio && state.prio ? " · + trâmite prioritário " + CFG.parcelas + "x " + brl(prioTotal() / CFG.parcelas) : "");
       $("[data-pick]", el).textContent = sel ? "Plano selecionado" : "Selecionar este plano";
     });
     renderTable();
@@ -223,7 +234,7 @@
     var minParcela = Math.min.apply(null, offered.map(function (id) { return parcela(id); }));
     setF("aPartir", brl(state.recomendado ? parcela(state.recomendado) : minParcela));
 
-    setF("prioHon", brl(CFG.prioritario.honorariosPorClasse * state.classes) + " (" + brl(CFG.prioritario.honorariosPorClasse) + "/classe)");
+    setF("prioHon", "+ " + CFG.parcelas + "x " + brl(prioTotal() / CFG.parcelas) + " (" + brl(prioTotal()) + ")");
     setF("prioTaxa", brl(CFG.prioritario.taxaInpiPorClasse * state.classes) + " (" + brl(CFG.prioritario.taxaInpiPorClasse) + "/classe)");
     $("#prio").checked = state.prio;
 
@@ -234,12 +245,15 @@
     setS("descLabel", "Desconto " + num(state.desconto).replace(",00", "") + "% nos honorários");
     setS("desc", "− " + brl(r.desc));
     $('[data-s-row="prio"]').hidden = !r.prioHon;
-    setS("prio", brl(r.prioHon));
+    setS("prio", CFG.parcelas + "x " + brl(r.prioHon / CFG.parcelas) + " = " + brl(r.prioHon));
     setS("taxa", brl(r.taxa));
     setS("total", brl(r.total));
-    $('[data-s="parcelaBig"]').innerHTML = CFG.parcelas + "x " + brl(r.pd).replace(/\s/, "&nbsp;") + " <span>/mês</span>";
-    setS("parcelaSub", "Plano " + p.nome + " · " + plural(state.classes) + (state.desconto ? " · com " + num(state.desconto).replace(",00", "") + "% OFF" : "") +
-      ". Taxas do INPI (" + brl(r.taxa) + ") pagas diretamente ao órgão" + (r.prioHon ? "; trâmite prioritário " + brl(r.prioHon) + " à parte." : "."));
+    setS("honorTotal", brl(r.honorTotal));
+    setS("taxaLabel", r.taxaPrio ? "Taxas INPI: pedido " + brl(r.taxaBase) + " + prioritário " + brl(r.taxaPrio) : "Taxas INPI (pagas ao órgão)");
+    $('[data-s="parcelaBig"]').innerHTML = CFG.parcelas + "x " + brl(r.parcelaFinal).replace(/\s/, "&nbsp;") + " <span>/mês</span>";
+    setS("parcelaSub", "Plano " + p.nome + (r.prioHon ? " + trâmite prioritário" : "") + " · " + plural(state.classes) +
+      (state.desconto ? " · com " + num(state.desconto).replace(",00", "") + "% OFF no plano" : "") +
+      ". Total de honorários: " + brl(r.honorTotal) + ". Taxas do INPI (" + brl(r.taxa) + ") pagas diretamente ao órgão.");
 
     var who = state.cliente ? state.cliente : "";
     var linhas = [
@@ -249,9 +263,9 @@
       state.marca ? "• Marca: " + state.marca : null,
       "• Plano: " + p.nome,
       "• Classes: " + state.classes,
-      "• Honorários: " + CFG.parcelas + "x " + brl(r.pd) + (state.desconto ? " (com " + num(state.desconto).replace(",00", "") + "% OFF)" : ""),
-      r.prioHon ? "• Trâmite prioritário: sim (" + brl(r.prioHon) + " + taxa INPI)" : null,
-      "• Taxas INPI estimadas: " + brl(r.taxa),
+      r.prioHon ? "• Trâmite prioritário: sim (incluso no plano)" : null,
+      "• Honorários: " + CFG.parcelas + "x " + brl(r.parcelaFinal) + " (total " + brl(r.honorTotal) + ")" + (state.desconto ? " — com " + num(state.desconto).replace(",00", "") + "% OFF no plano" : ""),
+      "• Taxas INPI estimadas: " + brl(r.taxa) + (r.taxaPrio ? " (pedido " + brl(r.taxaBase) + " + prioritário " + brl(r.taxaPrio) + ")" : ""),
       state.validade ? "• Proposta válida até " + fmtDate(state.validade) : null,
       "",
       "Quais são os próximos passos?",
@@ -263,7 +277,7 @@
     $("#fineprint").textContent =
       "Valores de honorários parcelados em " + CFG.parcelas + "x. Taxas federais do INPI de " + brl(CFG.taxaInpiPorClasse) +
       " por classe (valor com desconto legal para MEI, ME e EPP), pagas diretamente ao órgão. " +
-      (state.ofertaPrio ? "Trâmite prioritário opcional: honorários de " + brl(CFG.prioritario.honorariosPorClasse) + " por classe, adicionados ao plano contratado, + taxa INPI de " + brl(CFG.prioritario.taxaInpiPorClasse) + " por classe. " : "") +
+      (state.ofertaPrio ? "Trâmite prioritário opcional: honorários de " + brl(CFG.prioritario.honorariosPorClasse) + " por classe, incluídos no plano e parcelados em " + CFG.parcelas + "x; ao contratá-lo, somam-se as duas taxas do INPI (" + brl(CFG.taxaInpiPorClasse) + " do pedido + " + brl(CFG.prioritario.taxaInpiPorClasse) + " do trâmite prioritário, por classe). " : "") +
       "O parecer de viabilidade é válido somente na data da análise, pois pode mudar a qualquer momento." +
       (state.obs ? " Observações: " + state.obs : "");
   }

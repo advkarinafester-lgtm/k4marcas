@@ -26,4 +26,9 @@ subir a pasta `site_orcamento/` inteira. Para testar localmente:
 - Os dados da proposta vão codificados no link (`?p=...`). Isso não é criptografia:
   o valor final sempre deve ser confirmado pela equipe no fechamento.
 - A página tem `noindex` para não aparecer no Google.
-- O desconto (%) é aplicado sobre os honorários do plano; taxas do INPI não têm desconto.
+- Os valores da tabela de planos são **sem desconto**. O gerador já vem com 20% (campanha);
+  o desconto vale para os honorários do plano, não para as taxas do INPI.
+- Trâmite prioritário: honorários de R$ 798/classe **incluídos no plano e parcelados em 12x**.
+  Ao contratá-lo, o cliente paga as duas taxas do INPI: R$ 440/classe (pedido) +
+  R$ 445/classe (trâmite prioritário). Por padrão o desconto não se aplica ao prioritário
+  (`descontoAplica` em `config.js`).

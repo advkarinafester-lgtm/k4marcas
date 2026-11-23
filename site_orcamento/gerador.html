@@ -70,7 +70,7 @@
         <div class="f full">Planos exibidos ao cliente
           <div class="checks" id="po"></div>
         </div>
-        <label class="f">Desconto nos honorários (%)<input name="d" type="number" min="0" max="100" step="1" value="0" /><span class="hint">Ex.: 20 para a campanha “fechando no mês – 20% OFF”.</span></label>
+        <label class="f">Desconto nos honorários (%)<input name="d" type="number" min="0" max="100" step="1" value="20" /><span class="hint">Aplicado sobre os valores da tabela (que são sem desconto). Use 0 para não dar desconto.</span></label>
         <label class="f">Válida até<input name="v" type="date" /></label>
         <label class="f">Consultor(a) responsável<input name="r" placeholder="Ex.: Aline Miranda" /></label>
         <label class="f">WhatsApp do cliente (opcional)<input name="tel" inputmode="tel" placeholder="(11) 99999-9999" /><span class="hint">Para abrir a conversa já com o link.</span></label>
@@ -175,12 +175,12 @@
     var p = CFG.planos.filter(function (x) { return x.id === data.p; })[0];
     var parc = p.parcela[data.cl] * (1 - data.d / 100);
     var taxa = CFG.taxaInpiPorClasse * data.cl + (data.prOn ? CFG.prioritario.taxaInpiPorClasse * data.cl : 0);
-    var prio = data.prOn ? CFG.prioritario.honorariosPorClasse * data.cl : 0;
+    var prio = data.prOn ? CFG.prioritario.honorariosPorClasse * data.cl * (CFG.prioritario.descontoAplica ? 1 - data.d / 100 : 1) : 0;
     document.getElementById("mini").innerHTML =
       "<div><span>Plano</span><b>" + p.nome + " · " + data.cl + (data.cl > 1 ? " classes" : " classe") + "</b></div>" +
-      "<div><span>Parcela</span><b>" + CFG.parcelas + "x " + BRL.format(parc) + (data.d ? " <s style='color:var(--dim);font-weight:500'>" + BRL.format(p.parcela[data.cl]) + "</s>" : "") + "</b></div>" +
-      "<div><span>Honorários</span><b>" + BRL.format(parc * CFG.parcelas) + "</b></div>" +
-      (prio ? "<div><span>Trâmite prioritário</span><b>" + BRL.format(prio) + "</b></div>" : "") +
+      "<div><span>Parcela" + (prio ? " (plano + prioritário)" : "") + "</span><b>" + CFG.parcelas + "x " + BRL.format(parc + prio / CFG.parcelas) + (data.d ? " <s style='color:var(--dim);font-weight:500'>" + BRL.format(p.parcela[data.cl] + prio / CFG.parcelas) + "</s>" : "") + "</b></div>" +
+      "<div><span>Honorários do plano</span><b>" + BRL.format(parc * CFG.parcelas) + "</b></div>" +
+      (prio ? "<div><span>Trâmite prioritário (incluso)</span><b>" + BRL.format(prio) + "</b></div>" : "") +
       "<div><span>Taxas INPI</span><b>" + BRL.format(taxa) + "</b></div>" +
       "<div class='t'><span>Total estimado</span><b>" + BRL.format(parc * CFG.parcelas + prio + taxa) + "</b></div>";
 

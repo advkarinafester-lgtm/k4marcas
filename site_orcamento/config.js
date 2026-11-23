@@ -49,13 +49,17 @@ window.K4_CONFIG = {
     { nome: "Logotipo + Guia da Marca", start: false, intermediario: false, avancado: true },
   ],
 
-  // Taxa federal do INPI por classe (paga diretamente ao órgão — ME, EPP e MEI).
+  // Taxa federal do INPI por classe para solicitar o pedido (valor com desconto — MEI, ME e EPP).
+  // Paga diretamente ao órgão. Os valores das parcelas acima são SEM desconto de campanha.
   taxaInpiPorClasse: 440.0,
 
   // Trâmite prioritário (Portaria INPI nº 066/2026) — opcional.
+  // Os honorários são incluídos no plano e parcelados no mesmo nº de parcelas.
+  // Quem contrata o prioritário paga AS DUAS taxas do INPI: a do pedido (acima) + esta.
   prioritario: {
     honorariosPorClasse: 798.0,
-    taxaInpiPorClasse: 445.0,
+    taxaInpiPorClasse: 445.0,      // taxa INPI do trâmite prioritário (com desconto — MEI, ME e EPP)
+    descontoAplica: false,         // true = o % de desconto da proposta também vale para o prioritário
     prazo: "180 a 240 dias após deferimento da prioridade",
     proximasVagas: "Janeiro 2027",
   },
