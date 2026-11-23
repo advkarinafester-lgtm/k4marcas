@@ -46,6 +46,10 @@
     };
   }
 
+  var CLASSES = Object.keys(CFG.planos[0].parcela).map(Number).filter(function (n) {
+    return CFG.planos.every(function (p) { return p.parcela[n] > 0; });
+  }).sort(function (a, b) { return a - b; });
+  var MAXCL = CLASSES[CLASSES.length - 1];
   var planIds = CFG.planos.map(function (p) { return p.id; });
   var offered = Array.isArray(data.po) && data.po.length ? data.po.filter(function (id) { return planIds.indexOf(id) >= 0; }) : planIds.slice();
   if (!offered.length) offered = planIds.slice();
@@ -53,7 +57,7 @@
   var state = {
     cliente: String(data.c || "").trim(),
     marca: String(data.m || "").trim(),
-    classes: Math.min(3, Math.max(1, parseInt(data.cl, 10) || 1)),
+    classes: Math.min(MAXCL, Math.max(1, parseInt(data.cl, 10) || 1)),
     plano: offered.indexOf(data.p) >= 0 ? data.p : (offered.indexOf("intermediario") >= 0 ? "intermediario" : offered[0]),
     recomendado: offered.indexOf(data.p) >= 0 ? data.p : null,
     desconto: Math.min(100, Math.max(0, parseFloat(data.d) || 0)),
@@ -116,10 +120,11 @@
 
   // ---------- class selector ----------
   var seg = $("#classSeg");
-  [1, 2, 3].forEach(function (n) {
+  CLASSES.forEach(function (n) {
     var b = document.createElement("button");
     b.type = "button";
-    b.textContent = plural(n);
+    b.textContent = n;
+    b.setAttribute("aria-label", plural(n));
     b.dataset.n = n;
     b.addEventListener("click", function () { state.classes = n; render(); });
     seg.appendChild(b);
@@ -183,6 +188,34 @@
     }).join("");
   }
 
+  // ---------- progressão de desconto por nº de classes ----------
+  function economia(id, n) { var p = plan(id).parcela; return 1 - p[n] / (n * p[1]); }
+  function renderProg() {
+    $("#progHead").innerHTML = "<tr><th>Nº de classes</th>" + offered.map(function (id) { return "<th>" + plan(id).nome + "</th>"; }).join("") + "</tr>";
+    $("#progBody").innerHTML = CLASSES.map(function (n) {
+      var sel = n === state.classes;
+      return '<tr data-n="' + n + '"' + (sel ? ' class="on" aria-current="true"' : "") + '><td><b>' + plural(n) + "</b>" + (sel ? '<span class="here">sua escolha</span>' : "") + "</td>" +
+        offered.map(function (id) {
+          var pn = plan(id).parcela[n] * (1 - state.desconto / 100);
+          var e = economia(id, n);
+          return '<td class="' + (sel && id === state.plano ? "pick" : "") + '"><span class="pv">' + CFG.parcelas + "x " + num(pn) + "</span>" +
+            '<span class="pc">' + brl(pn / n) + "/classe" + (e > 0.005 ? ' <em>−' + Math.round(e * 100) + "%</em>" : "") + "</span></td>";
+        }).join("") + "</tr>";
+    }).join("");
+    var best = economia(state.plano, MAXCL);
+    var next = CLASSES.filter(function (n) { return n > state.classes; })[0];
+    var txt = "Quanto mais classes você protege, menor o valor por classe: até " + Math.round(best * 100) + "% de economia por classe no plano " + plan(state.plano).nome + " (" + MAXCL + " classes).";
+    if (next) {
+      var add = (plan(state.plano).parcela[next] - plan(state.plano).parcela[state.classes]) * (1 - state.desconto / 100);
+      txt += " Incluir a " + next + "ª classe custa só +" + CFG.parcelas + "x " + brl(add) + ".";
+    }
+    $("#progTip").textContent = txt;
+  }
+  $("#progBody").addEventListener("click", function (e) {
+    var tr = e.target.closest("tr[data-n]");
+    if (tr) { state.classes = +tr.dataset.n; render(); }
+  });
+
   // ---------- pricing ----------
   function parcelaCheia(id) { return plan(id).parcela[state.classes]; }
   function parcela(id) { return parcelaCheia(id) * (1 - state.desconto / 100); }
@@ -226,10 +259,12 @@
       $("[data-pick]", el).textContent = sel ? "Plano selecionado" : "Selecionar este plano";
     });
     renderTable();
+    renderProg();
 
     var r = calc();
     var p = plan(state.plano);
     setF("classesTxt", plural(state.classes));
+    setF("progDesc", state.desconto ? ", já com " + num(state.desconto).replace(",00", "") + "% OFF" : "");
     setF("planoNome", (state.recomendado ? plan(state.recomendado) : p).nome);
     var minParcela = Math.min.apply(null, offered.map(function (id) { return parcela(id); }));
     setF("aPartir", brl(state.recomendado ? parcela(state.recomendado) : minParcela));

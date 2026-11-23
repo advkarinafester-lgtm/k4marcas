@@ -62,7 +62,7 @@
         <label class="f">Nome do cliente / empresa<input name="c" placeholder="Ex.: Maria Silva" /></label>
         <label class="f">Marca a registrar<input name="m" placeholder="Ex.: Use Lua" /></label>
         <label class="f">Número de classes
-          <select name="cl"><option value="1">1 classe</option><option value="2">2 classes</option><option value="3">3 classes</option></select>
+          <select name="cl" id="clSel"></select>
         </label>
         <label class="f">Plano recomendado
           <select name="p" id="planSel"></select>
@@ -119,6 +119,10 @@
   var last = new Date(d.getFullYear(), d.getMonth() + 1, 0);
   f.v.value = last.getFullYear() + "-" + String(last.getMonth() + 1).padStart(2, "0") + "-" + String(last.getDate()).padStart(2, "0");
 
+  var clSel = document.getElementById("clSel");
+  Object.keys(CFG.planos[0].parcela).map(Number).sort(function (a, b) { return a - b; }).forEach(function (n) {
+    var o = document.createElement("option"); o.value = n; o.textContent = n + (n === 1 ? " classe" : " classes"); clSel.appendChild(o);
+  });
   var sel = document.getElementById("planSel");
   var po = document.getElementById("po");
   CFG.planos.forEach(function (p) {

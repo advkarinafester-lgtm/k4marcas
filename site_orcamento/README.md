@@ -4,7 +4,7 @@ Site estático (HTML/CSS/JS, sem build) baseado na apresentação "Proposta Come
 
 ## Páginas
 - `gerador.html` — **uso interno**. Preencha cliente, marca, classes, plano recomendado,
-  desconto, validade e consultor(a). Gera o link personalizado e a mensagem pronta para
+  desconto, validade e consultor(a). Gera o link personalizado (1 a 7 classes, com tabela progressiva) e a mensagem pronta para
   enviar pelo WhatsApp.
 - `index.html` — **página que o cliente recebe**. Mostra toda a apresentação (sobre, cases,
   processo INPI, vantagens, resultados, Mercado Livre, investimento, documentos, serviços)

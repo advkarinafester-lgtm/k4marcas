@@ -15,26 +15,28 @@ window.K4_CONFIG = {
 
   parcelas: 12,
 
-  // Valor de CADA parcela (honorários), por plano e por número de classes.
+  // Valor de CADA parcela (honorários), por plano e por número de classes (tabela progressiva:
+  // quanto mais classes, menor o valor por classe). Para oferecer mais classes, basta
+  // acrescentar a chave (8, 9…) em todos os planos.
   planos: [
     {
       id: "start",
       nome: "Start",
       resumo: "O essencial para proteger sua marca com segurança.",
-      parcela: { 1: 137.0, 2: 229.5, 3: 312.66 },
+      parcela: { 1: 137.0, 2: 229.5, 3: 312.66, 4: 386.0, 5: 451.2, 6: 509.0, 7: 561.0 },
     },
     {
       id: "intermediario",
       nome: "Intermediário",
       resumo: "Proteção completa com 1 recurso incluso.",
-      parcela: { 1: 188.0, 2: 315.0, 3: 429.0 },
+      parcela: { 1: 188.0, 2: 315.0, 3: 429.0, 4: 532.0, 5: 624.0, 6: 706.0, 7: 780.0 },
       destaque: "Mais escolhido",
     },
     {
       id: "avancado",
       nome: "Avançado",
       resumo: "Blindagem total + identidade visual da marca.",
-      parcela: { 1: 252.0, 2: 493.41, 3: 701.75 },
+      parcela: { 1: 252.0, 2: 493.41, 3: 701.75, 4: 868.41, 5: 993.41, 6: 1076.75, 7: 1160.08 },
     },
   ],
 
