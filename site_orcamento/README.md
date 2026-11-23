@@ -15,8 +15,14 @@ Site estático (HTML/CSS/JS, sem build) baseado na apresentação "Proposta Come
 Tudo em `config.js` (parcelas por plano/classe, itens da tabela, taxa INPI, trâmite
 prioritário, WhatsApp, e-mail etc.).
 
-## Publicar
-Qualquer hospedagem estática serve (GitHub Pages, Netlify, Vercel, Hostinger…): basta
+## Publicar (GitHub Pages)
+1. No GitHub: **Settings → Pages → Build and deployment → Source: Deploy from a branch**.
+2. Branch: `claude/funny-babbage-lqpjjk` · pasta `/ (root)` → **Save**.
+3. Em 1–2 minutos o site fica em:
+   - Gerador (interno): https://advkarinafester-lgtm.github.io/k4marcas/site_orcamento/gerador.html
+   - Proposta (cliente): https://advkarinafester-lgtm.github.io/k4marcas/site_orcamento/
+
+Outras opções: Qualquer hospedagem estática serve (GitHub Pages, Netlify, Vercel, Hostinger…): basta
 subir a pasta `site_orcamento/` inteira. Para testar localmente:
 
     cd site_orcamento && python3 -m http.server 8000
