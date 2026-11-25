@@ -72,7 +72,7 @@ window.K4_CONFIG = {
     planos: [
       {
         id: "essencial",
-        nome: "Vigilância Essencial",
+        nome: "Vigilância Start",
         inclui: [
           "Radar semanal da RPI",
           "Vigilância de novos pedidos publicados (oposição)",

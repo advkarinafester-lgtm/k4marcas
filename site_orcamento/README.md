@@ -22,7 +22,7 @@ As seções exclusivas de e-commerce estão marcadas com `data-tipo="ecom"` no `
 
 ## Seções em todas as propostas
 - Classes de Nice (1 a 45), tabela progressiva até 9 classes, plano de monitoramento
-  (Vigilância Essencial e Completa, mensalidade por faixa de processos) e serviços avulsos.
+  (Vigilância Start e Completa, mensalidade por faixa de processos) e serviços avulsos.
 - Textos e valores ficam em `config.js` (`ncl`, `vigilancia`, `avulsos`).
 
 ## Campanha (Black Friday)
