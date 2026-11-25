@@ -113,10 +113,15 @@
         <label class="f">Válida até<input name="v" type="date" /></label>
         <label class="f">Consultor(a) responsável<input name="r" placeholder="Ex.: Aline Miranda" /></label>
         <label class="f">WhatsApp do cliente (opcional)<input name="tel" inputmode="tel" placeholder="(11) 99999-9999" /><span class="hint">Para abrir a conversa já com o link.</span></label>
-        <label class="f full">Vigilância de marca (opcional, mensal)
-          <select name="vg" id="vgSel"><option value="">Não incluir (cliente pode escolher na página)</option></select>
-          <span class="hint">Faixa calculada pelo nº de classes (1 classe = 1 processo).</span>
-        </label>
+        <div class="f full">Vigilância de marca — proteção contínua (opcional, mensal)
+          <div class="checks">
+            <label><input type="checkbox" name="vo" checked /> Mostrar como opcional</label>
+            <label>Já deixar marcado:
+              <select name="vg" id="vgSel" style="width:auto;padding:6px 10px"><option value="">Não</option></select>
+            </label>
+          </div>
+          <span class="hint">O cliente decide se contrata. Faixa calculada pelo nº de classes (1 classe = 1 processo).</span>
+        </div>
         <div class="f full" id="prioBox">Trâmite prioritário (Portaria INPI 066/2026)
           <div class="checks">
             <label><input type="checkbox" name="pr" checked /> Mostrar como opcional</label>
@@ -242,7 +247,8 @@
       d: f.bf.checked ? 0 : Math.min(100, Math.max(0, +f.d.value || 0)), v: f.v.value,
       bf: f.bf.checked ? 1 : 0,
       t: f.t.value,
-      vg: f.vg.value,
+      vg: f.vo.checked ? f.vg.value : "",
+      vo: f.vo.checked ? 1 : 0,
       e: new Date().toISOString().slice(0, 10), r: f.r.value.trim(),
       pr: f.pr.checked ? 1 : 0, prOn: f.prOn.checked && f.pr.checked && f.t.value === "ecom" ? 1 : 0,
     };
@@ -273,6 +279,7 @@
     var p = CFG.planos.filter(function (x) { return x.id === data.p; })[0];
     var parc = window.K4_PARCELA(p.id, data.cl, { bf: !!data.bf, d: data.d });
     f.d.disabled = f.bf.checked;
+    f.vg.disabled = !f.vo.checked;
     document.getElementById("prioBox").hidden = data.t !== "ecom";
     var taxa = CFG.taxaInpiPorClasse * data.cl + (data.prOn ? CFG.prioritario.taxaInpiPorClasse * data.cl : 0);
     var prio = data.prOn ? CFG.prioritario.honorariosPorClasse * data.cl * (CFG.prioritario.descontoAplica ? 1 - (data.bf ? CAMP.desconto : data.d) / 100 : 1) : 0;

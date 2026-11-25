@@ -35,7 +35,7 @@
       <a href="#vantagens" data-tipo="ecom">Vantagens</a>
       <a href="#classes" id="navClasses">Classes</a>
       <a href="#investimento">Investimento</a>
-      <a href="#monitoramento">Monitoramento</a>
+      <a href="#monitoramento" id="navMon">Monitoramento</a>
       <a href="#documentos">Documentos</a>
     </div>
     <a class="btn sm" href="#investimento">Ver investimento</a>
@@ -381,11 +381,12 @@
       <div class="addon-info">
         <span class="eyebrow">Opcional · Plano de monitoramento</span>
         <h3>Vigilância de marca</h3>
-        <p>Acompanhamos semanalmente a RPI para identificar pedidos e marcas que conflitam com a sua. Mensalidade à parte, por faixa de processos (<b data-f="vigProc"></b>). Detalhes logo abaixo.</p>
+        <p>Proteção contínua após o registro: acompanhamos semanalmente a RPI para identificar pedidos e marcas que conflitam com a sua. Contratação opcional, com mensalidade à parte por faixa de processos (<b data-f="vigProc"></b>). <a href="#monitoramento" style="color:#ff8fb0">Ver os planos</a>.</p>
+        <div class="tags"><span>Radar semanal da RPI</span><span>Oposição e nulidade a tempo</span><span>12 meses</span></div>
       </div>
       <div class="addon-ctl">
-        <span class="seg-label">Incluir no resumo</span>
-        <div class="seg vig-seg" role="group" aria-label="Vigilância de marca" id="vigSeg"></div>
+        <label class="switch"><input type="checkbox" id="vigOn" /><span class="tr"></span>Incluir vigilância de marca</label>
+        <div class="seg vig-seg" role="group" aria-label="Plano de vigilância" id="vigSeg" hidden></div>
         <div class="line"><span>Mensalidade</span><b data-f="vigValor">—</b></div>
       </div>
     </div>
@@ -443,7 +444,7 @@
     </div>
 
     <h3 class="sub-h rv">Vigilância de marca</h3>
-    <p class="lead rv">Monitoramos os pedidos publicados que conflitam com a sua marca, para apresentar oposição a tempo.</p>
+    <p class="lead rv">Monitoramos os pedidos publicados que conflitam com a sua marca, para apresentar oposição a tempo. <b style="color:var(--text)">Contratação opcional:</b> escolha um plano ou siga sem monitoramento.</p>
     <div class="vig-plans" id="vigPlans"></div>
     <div class="vig-foot">
       <div><span class="ncl-h">Condições</span><ul class="vig-cond" id="vigCond"></ul></div>

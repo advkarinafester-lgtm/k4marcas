@@ -485,7 +485,7 @@ section { padding: 96px 0; position: relative; }
 .vig-plan.on { border-color: var(--magenta); }
 .vig-plan .ribbon { position: absolute; top: -12px; right: 22px; background: var(--grad); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; padding: 5px 12px; border-radius: 999px; }
 .vig-plan h3 { grid-column: 1 / -1; font-size: 22px; }
-.vig-plan ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; font-size: 14px; }
+.vig-plan ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; font-size: 14px; align-content: start; }
 .vig-plan ul li { display: flex; gap: 10px; color: var(--text); }
 .vig-plan ul li::before { content: ""; flex: none; width: 6px; height: 6px; border-radius: 50%; background: var(--magenta); margin-top: 8px; }
 .tiers { display: grid; gap: 8px; align-content: start; }
@@ -500,6 +500,8 @@ section { padding: 96px 0; position: relative; }
 .vig-tax { border: 1px solid var(--line); padding: 20px 24px; }
 .vig-tax p { color: var(--muted); font-size: 14px; }
 .vig-seg { display: flex; flex-wrap: wrap; border-radius: 14px; }
+.vig-plan .pick-vig { grid-column: 1 / -1; justify-self: start; }
+.vig-plan .pick-vig.on { background: #1fae5b; }
 .vig-seg button { flex: 1; border-radius: 10px; }
 @media (max-width: 960px) {
   .mon { grid-template-columns: 1fr; gap: 32px; }

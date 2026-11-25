@@ -67,6 +67,8 @@
     // classes NCL definidas pela equipe no gerador (ex.: [25, 35])
     nc: (Array.isArray(data.nc) ? data.nc : []).map(Number).filter(function (n, i, a) { return n >= 1 && n <= 45 && a.indexOf(n) === i; }).sort(function (a, b) { return a - b; }),
     vig: (CFG.vigilancia && CFG.vigilancia.planos.some(function (v) { return v.id === data.vg; })) ? data.vg : "",
+    // vigilância é opcional (como o trâmite prioritário); o gerador pode não oferecê-la
+    vigOferta: !(data.vo === 0 || data.vo === "0"),
     validade: data.v || "",
     emissao: data.e || todayIso(),
     consultor: String(data.r || "").trim(),
@@ -330,13 +332,29 @@
 
     $("#vigCond").innerHTML = VIG.condicoes.map(function (c) { return "<li>" + esc(c) + "</li>"; }).join("");
 
+    if (!state.vigOferta) {
+      state.vig = "";
+      $("#vigAddon").hidden = true;
+      $("#monitoramento").hidden = true;
+      $("#navMon").hidden = true;
+    }
+    state.vigUlt = state.vig || VIG.planos[0].id;
+    $("#vigOn").addEventListener("change", function (e) { state.vig = e.target.checked ? state.vigUlt : ""; render(); });
+    $("#vigPlans").addEventListener("click", function (e) {
+      var b = e.target.closest("[data-vig]");
+      if (!b) return;
+      var id = b.dataset.vig;
+      state.vig = state.vig === id ? "" : id;
+      if (state.vig) state.vigUlt = state.vig;
+      render();
+    });
     var seg = $("#vigSeg");
-    [{ id: "", nome: "Não incluir" }].concat(VIG.planos).forEach(function (v) {
+    VIG.planos.forEach(function (v) {
       var b = document.createElement("button");
       b.type = "button";
       b.dataset.id = v.id;
       b.textContent = v.nome.replace("Vigilância ", "");
-      b.addEventListener("click", function () { state.vig = v.id; render(); });
+      b.addEventListener("click", function () { state.vig = state.vigUlt = v.id; render(); });
       seg.appendChild(b);
     });
   })();
@@ -353,10 +371,14 @@
           var de = i ? v.faixas[i - 1].ate + 1 : 1;
           var on = cur && cur.ate === f.ate;
           return '<div class="' + (on ? "cur" : "") + '"><span>' + de + " a " + f.ate + " processos</span><b>" + brl(f.valor) + "</b></div>";
-        }).join("") + "</div></div>";
+        }).join("") + "</div>" +
+        '<button type="button" class="btn sm pick-vig no-print' + (state.vig === v.id ? " on" : " ghost") + '" data-vig="' + v.id + '" aria-pressed="' + (state.vig === v.id) + '">' +
+        (state.vig === v.id ? "✓ Incluída na proposta · remover" : "Contratar " + v.nome + (cur ? " · " + brl(cur.valor) + "/mês" : "")) + "</button></div>";
     }).join("");
 
     $$("#vigSeg button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.id === state.vig)); });
+    $("#vigOn").checked = !!state.vig;
+    $("#vigSeg").hidden = !state.vig;
     var f = state.vig ? vigFaixa(state.vig, n) : null;
     setF("vigProc", plural(n).replace("classe", "processo"));
     setF("vigValor", state.vig ? (f ? brl(f.valor) + "/mês" : "Sob consulta") : "Não incluída");

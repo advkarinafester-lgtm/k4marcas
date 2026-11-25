@@ -26,6 +26,9 @@ As seções exclusivas de e-commerce estão marcadas com `data-tipo="ecom"` no `
   pode remover ou incluir classes (até 9); o orçamento é recalculado e as alterações vão na
   mensagem de aceite. Tabela progressiva até 9 classes, plano de monitoramento
   (Vigilância Start e Completa, mensalidade por faixa de processos) e serviços avulsos.
+- A vigilância de marca é opcional, como o trâmite prioritário: o cliente liga a chave
+  "Incluir vigilância de marca" ou clica em "Contratar" no plano. No gerador, "Mostrar como
+  opcional" (desmarcado = a seção não aparece) e "Já deixar marcado".
 - Textos e valores ficam em `config.js` (`ncl`, `vigilancia`, `avulsos`).
 
 ## Campanha (Black Friday)
