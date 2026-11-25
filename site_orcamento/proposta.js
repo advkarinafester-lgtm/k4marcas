@@ -64,6 +64,8 @@
     bf: !!(data.bf && CFG.campanha && CFG.campanha.ativa),
     // tipo de proposta: "ecom" (forma 1, e-commerce) ou "geral" (forma 2, outros nichos)
     tipo: data.t === "geral" ? "geral" : "ecom",
+    // classes NCL definidas pela equipe no gerador (ex.: [25, 35])
+    nc: (Array.isArray(data.nc) ? data.nc : []).map(Number).filter(function (n, i, a) { return n >= 1 && n <= 45 && a.indexOf(n) === i; }).sort(function (a, b) { return a - b; }),
     vig: (CFG.vigilancia && CFG.vigilancia.planos.some(function (v) { return v.id === data.vg; })) ? data.vg : "",
     validade: data.v || "",
     emissao: data.e || todayIso(),
@@ -122,6 +124,13 @@
   } else if (temDesc()) {
     vEl.hidden = false;
     vEl.textContent = offTxt() + " aplicado nos honorários do plano";
+  }
+
+  // classes definidas determinam a quantidade inicial
+  if (state.nc.length) state.classes = Math.min(MAXCL, state.nc.length);
+  function listaClasses(arr) {
+    var l = arr.map(String);
+    return l.length > 1 ? l.slice(0, -1).join(", ") + " e " + l[l.length - 1] : l[0] || "";
   }
 
   // ---------- formato da proposta ----------
@@ -274,11 +283,18 @@
   // conteúdo estático gerado a partir do config.js
   (function staticBlocks() {
     var esc = function (t) { var d = document.createElement("div"); d.textContent = t; return d.innerHTML; };
-    var li = function (n) { return "<li><b>" + n + "</b>" + esc(CFG.ncl[n - 1]) + "</li>"; };
-    var prod = "", serv = "";
-    for (var n = 1; n <= 45; n++) { if (n <= 34) prod += li(n); else serv += li(n); }
-    $("#nclProd").innerHTML = prod;
-    $("#nclServ").innerHTML = serv;
+    // classes: o cliente vê somente as classes definidas no gerador
+    if (state.nc.length) {
+      $("#nclCards").innerHTML = state.nc.map(function (n) {
+        var c = CFG.ncl[n - 1];
+        return '<div class="ncl-card rv"><span class="num">' + n + "</span><small>Classe " + n + " · " + (n <= 34 ? "Produtos" : "Serviços") + "</small><h3>" + esc(c.nome) + "</h3><p>" + esc(c.resumo) + "</p></div>";
+      }).join("");
+      setF("nclTitulo", state.nc.length === 1 ? "Classe da sua marca" : "Classes da sua marca");
+      $("#nclTip").hidden = !(state.nc.indexOf(35) >= 0 && state.nc.some(function (n) { return n <= 34; }));
+    } else {
+      $("#classes").hidden = true;
+      $("#navClasses").hidden = true;
+    }
 
     $("#avulsosBody").innerHTML = CFG.avulsos.map(function (a) {
       return "<tr><td>" + esc(a.nome) + "</td><td>" + esc(a.inclui) + "</td><td>" + brl(a.valor) + "</td><td>" + esc(a.obs) + "</td></tr>";
@@ -347,7 +363,8 @@
 
     var r = calc();
     var p = plan(state.plano);
-    setF("classesTxt", plural(state.classes));
+    var difere = state.nc.length && state.classes !== state.nc.length;
+    setF("classesTxt", state.nc.length ? plural(state.nc.length) + " (" + listaClasses(state.nc) + ")" : plural(state.classes));
     setF("progDesc", state.bf ? ", já com os preços " + CFG.campanha.nome + " (1 classe: preço fechado; 2 ou mais: " + CFG.campanha.desconto + "% OFF)" : state.desconto ? ", já com " + offTxt() : "");
     setF("planoNome", (state.recomendado ? plan(state.recomendado) : p).nome);
     var minParcela = Math.min.apply(null, offered.map(function (id) { return parcela(id); }));
@@ -358,7 +375,10 @@
     $("#prio").checked = state.prio;
 
     setS("plano", p.nome);
-    setS("classes", plural(state.classes));
+    setS("classes", plural(state.classes) + (state.nc.length && !difere ? " — " + listaClasses(state.nc) : ""));
+    $("#nclNote").hidden = !difere;
+    if (difere) $("#nclNote").textContent = "Esta proposta foi montada para " + plural(state.nc.length) + " (" + listaClasses(state.nc) + "). " +
+      (state.classes > state.nc.length ? "As classes adicionais serão definidas com a nossa equipe." : "Fale com a equipe para ajustar quais classes manter.");
     setS("honor", CFG.parcelas + "x " + brl(r.pc) + " = " + brl(r.honorCheio));
     $('[data-s-row="desc"]').hidden = !temDesc();
     setS("descLabel", "Desconto " + offTxt() + " nos honorários");
@@ -382,7 +402,7 @@
       state.marca ? "• Marca: " + state.marca : null,
       "• Proposta: " + (state.tipo === "ecom" ? "E-commerce" : "Outros nichos"),
       "• Plano: " + p.nome,
-      "• Classes: " + state.classes,
+      "• Classes: " + state.classes + (state.nc.length ? (difere ? " (proposta original: " + listaClasses(state.nc) + ")" : " (" + listaClasses(state.nc) + ")") : ""),
       r.prioHon ? "• Trâmite prioritário: sim (incluso no plano)" : null,
       "• Honorários: " + CFG.parcelas + "x " + brl(r.parcelaFinal) + " (total " + brl(r.honorTotal) + ")" + (temDesc() ? " — " + offTxt() + " no plano" : ""),
       vig ? "• " + vig.nome + ": " + (vig.valor ? brl(vig.valor) + "/mês" : "sob consulta") : null,

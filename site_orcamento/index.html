@@ -33,7 +33,7 @@
       <a href="#sobre">Sobre</a>
       <a href="#processo">Processo INPI</a>
       <a href="#vantagens" data-tipo="ecom">Vantagens</a>
-      <a href="#classes">Classes</a>
+      <a href="#classes" id="navClasses">Classes</a>
       <a href="#investimento">Investimento</a>
       <a href="#monitoramento">Monitoramento</a>
       <a href="#documentos">Documentos</a>
@@ -307,14 +307,11 @@
 <section class="z" id="classes">
   <div class="wrap">
     <span class="eyebrow">Classificação de Nice (NCL)</span>
-    <h2 class="h2 rv">Classes de 1 a 45</h2>
-    <p class="lead rv" style="margin-top:14px">A marca é protegida dentro de cada classe registrada. São 34 classes de produtos e 11 de serviços.</p>
+    <h2 class="h2 rv" data-f="nclTitulo">Classes da sua marca</h2>
+    <p class="lead rv" style="margin-top:14px">A marca é protegida dentro de cada classe registrada. A classificação tem 45 classes (34 de produtos e 11 de serviços); estas são as definidas pela nossa equipe para o seu negócio:</p>
     <div class="bar"></div>
-    <div class="ncl">
-      <div><span class="ncl-h">Produtos · classes 1 a 34</span><ol class="ncl-grid" id="nclProd"></ol></div>
-      <div><span class="ncl-h">Serviços · classes 35 a 45</span><ol class="ncl-grid serv" id="nclServ"></ol></div>
-    </div>
-    <p class="ncl-tip rv"><b>Dica K4:</b> para quem revende, registre a classe do produto + a <b>Classe 35</b> (comércio).</p>
+    <div class="ncl-cards" id="nclCards"></div>
+    <p class="ncl-tip rv" id="nclTip" hidden><b>Dica K4:</b> para quem revende, registre a classe do produto + a <b>Classe 35</b> (comércio).</p>
   </div>
 </section>
 
@@ -389,6 +386,7 @@
         <div class="srow"><span>Marca</span><b data-f="marca">—</b></div>
         <div class="srow"><span>Plano</span><b data-s="plano"></b></div>
         <div class="srow"><span>Classes</span><b data-s="classes"></b></div>
+        <p class="ncl-note" id="nclNote" hidden></p>
         <div class="srow"><span>Honorários do plano (12x)</span><b data-s="honor"></b></div>
         <div class="srow disc" data-s-row="desc" hidden><span data-s="descLabel"></span><b data-s="desc"></b></div>
         <div class="srow" data-s-row="prio" hidden><span>Trâmite prioritário (incluso, 12x)</span><b data-s="prio"></b></div>

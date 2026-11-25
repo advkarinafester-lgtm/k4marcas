@@ -463,6 +463,14 @@ section { padding: 96px 0; position: relative; }
 @media (max-width: 1000px) { .ncl { grid-template-columns: 1fr; } .ncl-grid { grid-template-columns: repeat(2, 1fr); } .ncl-grid.serv { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 560px) { .ncl-grid, .ncl-grid.serv { grid-template-columns: 1fr; } }
 
+.ncl-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+.ncl-card { display: grid; grid-template-columns: auto 1fr; align-content: start; gap: 6px 20px; background: var(--panel); border-left: 4px solid var(--magenta); padding: 24px; }
+.ncl-card .num { grid-row: span 3; font-family: var(--head); font-weight: 800; font-size: 44px; line-height: 1; color: var(--magenta); min-width: 56px; }
+.ncl-card small { color: var(--dim); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; }
+.ncl-card h3 { font-size: 20px; }
+.ncl-card p { color: var(--muted); font-size: 14px; }
+@media (max-width: 420px) { .ncl-cards { grid-template-columns: 1fr; } }
+
 /* ---------- Monitoramento ---------- */
 .mon { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 56px; align-items: start; }
 .mon .h2 em { color: #a64dff; }
@@ -508,3 +516,4 @@ section { padding: 96px 0; position: relative; }
 .avulsos-t td:nth-child(2) { color: var(--muted); }
 .avulsos-t td:nth-child(3) { font-family: var(--head); font-weight: 700; font-size: 17px; white-space: nowrap; }
 .avulsos-t td:nth-child(4) { color: var(--dim); }
+.ncl-note { margin: 10px 0 4px; padding: 10px 14px; border-radius: 8px; background: rgba(255, 138, 76, .1); color: #ffb48c; font-size: 13px; font-weight: 600; }

@@ -35,6 +35,19 @@
     .tipo input:checked + span { border-color: var(--magenta); background: rgba(224, 24, 92, .12); }
     .tipo input:focus-visible + span { outline: 2px solid #fff; outline-offset: 2px; }
     @media (max-width: 560px) { .tipo { grid-template-columns: 1fr; } }
+    .pick-head { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+    .pick-head input { flex: 1 1 260px; }
+    .pick-count { font-size: 13px; color: #ffb48c; font-weight: 700; }
+    .pick { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; max-height: 330px; overflow: auto; padding: 10px; background: #120c18; border: 1px solid #3a3043; border-radius: 10px; }
+    .pick-g { grid-column: 1 / -1; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--magenta); font-weight: 700; margin: 6px 0 2px; }
+    .pick-i { display: flex; align-items: center; gap: 8px; padding: 6px 9px; line-height: 1.3; border-radius: 6px; cursor: pointer; font-size: 13px; color: var(--text); border: 1px solid transparent; }
+    .pick-i:hover { background: #1f1628; }
+    .pick-i b { font-family: var(--head); color: var(--magenta); min-width: 20px; }
+    .pick-i input { accent-color: var(--magenta); width: 16px; height: 16px; flex: none; }
+    .pick-i:has(input:checked) { border-color: var(--magenta); background: rgba(224, 24, 92, .12); }
+    .pick-i:has(input:disabled) { opacity: .4; cursor: not-allowed; }
+    .pick-i[hidden] { display: none; }
+        @media (max-width: 440px) { .pick { grid-template-columns: 1fr; } }
     .hint { font-size: 12px; color: var(--dim); font-weight: 500; }
     .out { position: sticky; top: 88px; display: grid; gap: 18px; }
     .link { font-family: ui-monospace, Menlo, monospace; font-size: 12px; word-break: break-all; background: #120c18; border: 1px solid #3a3043; border-radius: 10px; padding: 12px; color: #ffd0de; max-height: 120px; overflow: auto; }
@@ -74,8 +87,17 @@
       <div class="fields">
         <label class="f">Nome do cliente / empresa<input name="c" placeholder="Ex.: Maria Silva" /></label>
         <label class="f">Marca a registrar<input name="m" placeholder="Ex.: Use Lua" /></label>
+        <div class="f full">Classes do cliente (Classificação de Nice)
+          <div class="pick-head">
+            <input type="search" id="nclBusca" placeholder="Buscar: nº ou ramo (ex.: roupa)" />
+            <span class="pick-count" id="nclCount">Nenhuma classe marcada</span>
+          </div>
+          <div class="pick" id="nclPick"></div>
+          <span class="hint">O cliente verá somente as classes marcadas, com o resumo de cada uma. A quantidade define o valor (máximo de <span id="nclMax"></span>).</span>
+        </div>
         <label class="f">Número de classes
           <select name="cl" id="clSel"></select>
+          <span class="hint" id="clHint">Use só se ainda não souber quais classes serão.</span>
         </label>
         <label class="f">Plano recomendado
           <select name="p" id="planSel"></select>
@@ -150,6 +172,36 @@
     var fx = CAMP.precoFixo1Classe || {};
     document.getElementById("bfHint").textContent = "1 classe: " + CFG.planos.map(function (p) { return p.nome + " 12x " + BRL.format(fx[p.id] || 0); }).join(" · ") + " — 2 ou mais classes: " + CAMP.desconto + "% OFF na tabela.";
   } else { document.getElementById("bfBox").hidden = true; f.bf.checked = false; }
+  // ---------- seletor de classes NCL ----------
+  var MAXCL = Math.max.apply(null, Object.keys(CFG.planos[0].parcela).map(Number));
+  document.getElementById("nclMax").textContent = MAXCL + " classes";
+  var pick = document.getElementById("nclPick");
+  pick.innerHTML = '<span class="pick-g">Produtos · 1 a 34</span>' +
+    CFG.ncl.map(function (c, i) {
+      var n = i + 1;
+      return (n === 35 ? '<span class="pick-g">Serviços · 35 a 45</span>' : "") +
+        '<label class="pick-i" title="' + c.resumo.replace(/"/g, "&quot;") + '" data-q="' + (n + " " + c.nome + " " + c.resumo).toLowerCase() + '">' +
+        '<input type="checkbox" name="nc" value="' + n + '" /><b>' + n + "</b><span>" + c.nome + "</span></label>";
+    }).join("");
+  document.getElementById("nclBusca").addEventListener("input", function (e) {
+    var q = e.target.value.trim().toLowerCase();
+    Array.prototype.forEach.call(pick.querySelectorAll(".pick-i"), function (l) {
+      l.hidden = q && l.dataset.q.indexOf(q) < 0 && !l.querySelector("input").checked;
+    });
+  });
+  function classesMarcadas() {
+    return Array.prototype.slice.call(pick.querySelectorAll("input:checked")).map(function (i) { return +i.value; });
+  }
+  function syncClasses() {
+    var nc = classesMarcadas();
+    Array.prototype.forEach.call(pick.querySelectorAll("input"), function (i) { i.disabled = !i.checked && nc.length >= MAXCL; });
+    document.getElementById("nclCount").textContent = nc.length ? nc.length + (nc.length > 1 ? " classes: " : " classe: ") + nc.join(", ") : "Nenhuma classe marcada";
+    f.cl.disabled = nc.length > 0;
+    if (nc.length) f.cl.value = String(nc.length);
+    document.getElementById("clHint").textContent = nc.length ? "Definido pelas classes marcadas." : "Use só se ainda não souber quais classes serão.";
+    return nc;
+  }
+
   var vgSel = document.getElementById("vgSel");
   (CFG.vigilancia ? CFG.vigilancia.planos : []).forEach(function (v) {
     var o = document.createElement("option"); o.value = v.id; o.textContent = v.nome; vgSel.appendChild(o);
@@ -186,6 +238,7 @@
     if (offered.length && offered.indexOf(sel.value) < 0) sel.value = offered[0];
     var data = {
       c: f.c.value.trim(), m: f.m.value.trim(), cl: +f.cl.value, p: sel.value,
+      nc: syncClasses(),
       d: f.bf.checked ? 0 : Math.min(100, Math.max(0, +f.d.value || 0)), v: f.v.value,
       bf: f.bf.checked ? 1 : 0,
       t: f.t.value,
@@ -195,6 +248,7 @@
     };
     if (offered.length && offered.length < CFG.planos.length) data.po = offered;
     if (f.o.value.trim()) data.o = f.o.value.trim();
+    if (data.nc.length) data.cl = data.nc.length; else delete data.nc;
     Object.keys(data).forEach(function (k) { if (data[k] === "" ) delete data[k]; });
 
     var link = baseUrl() + "?p=" + encode(data);
@@ -205,7 +259,8 @@
     var nome = data.c ? data.c.split(" ")[0] : "";
     var msg = "Olá" + (nome ? ", " + nome : "") + "! Tudo bem?\n\n" +
       "Aqui é " + (data.r ? data.r + ", da " : "a equipe da ") + "K4 Marcas. Preparamos a sua proposta" +
-      (data.m ? " para o registro da marca *" + data.m + "*" : " de registro de marca") + ".\n\n" +
+      (data.m ? " para o registro da marca *" + data.m + "*" : " de registro de marca") +
+      (data.nc ? " na" + (data.nc.length > 1 ? "s classes " + data.nc.slice(0, -1).join(", ") + " e " + data.nc[data.nc.length - 1] : " classe " + data.nc[0]) : "") + ".\n\n" +
       "É só abrir o link abaixo para ver os planos, simular as classes e aceitar direto pelo WhatsApp:\n" + link +
       (data.v ? "\n\nCondições válidas até " + data.v.split("-").reverse().join("/") + (data.bf ? " (condição " + CAMP.nome + ")" : data.d ? " (" + data.d + "% OFF nos honorários)" : "") + "." : "") +
       "\n\nQualquer dúvida, estou à disposição!";
@@ -223,6 +278,7 @@
     var prio = data.prOn ? CFG.prioritario.honorariosPorClasse * data.cl * (CFG.prioritario.descontoAplica ? 1 - (data.bf ? CAMP.desconto : data.d) / 100 : 1) : 0;
     document.getElementById("mini").innerHTML =
       "<div><span>Plano</span><b>" + p.nome + " · " + data.cl + (data.cl > 1 ? " classes" : " classe") + "</b></div>" +
+      (data.nc ? "<div><span>Classes</span><b>" + data.nc.join(", ") + "</b></div>" : "") +
       "<div><span>Parcela" + (prio ? " (plano + prioritário)" : "") + "</span><b>" + CFG.parcelas + "x " + BRL.format(parc + prio / CFG.parcelas) + (data.d || data.bf ? " <s style='color:var(--dim);font-weight:500'>" + BRL.format(p.parcela[data.cl] + prio / CFG.parcelas) + "</s>" : "") + "</b></div>" +
       "<div><span>Honorários do plano</span><b>" + BRL.format(parc * CFG.parcelas) + "</b></div>" +
       (prio ? "<div><span>Trâmite prioritário (incluso)</span><b>" + BRL.format(prio) + "</b></div>" : "") +
