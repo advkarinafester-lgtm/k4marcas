@@ -22,7 +22,9 @@ As seções exclusivas de e-commerce estão marcadas com `data-tipo="ecom"` no `
 
 ## Seções em todas as propostas
 - Classes de Nice: a equipe marca as classes no gerador e o cliente vê somente essas,
-  com o resumo de cada uma (sem classes marcadas, a seção não aparece). Tabela progressiva até 9 classes, plano de monitoramento
+  com o resumo de cada uma (sem classes marcadas, a seção não aparece). Na proposta, o cliente
+  pode remover ou incluir classes (até 9); o orçamento é recalculado e as alterações vão na
+  mensagem de aceite. Tabela progressiva até 9 classes, plano de monitoramento
   (Vigilância Start e Completa, mensalidade por faixa de processos) e serviços avulsos.
 - Textos e valores ficam em `config.js` (`ncl`, `vigilancia`, `avulsos`).
 

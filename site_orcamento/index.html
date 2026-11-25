@@ -308,9 +308,18 @@
   <div class="wrap">
     <span class="eyebrow">Classificação de Nice (NCL)</span>
     <h2 class="h2 rv" data-f="nclTitulo">Classes da sua marca</h2>
-    <p class="lead rv" style="margin-top:14px">A marca é protegida dentro de cada classe registrada. A classificação tem 45 classes (34 de produtos e 11 de serviços); estas são as definidas pela nossa equipe para o seu negócio:</p>
+    <p class="lead rv" style="margin-top:14px">A marca é protegida dentro de cada classe registrada. A classificação tem 45 classes (34 de produtos e 11 de serviços); estas são as indicadas pela nossa equipe para o seu negócio. Você pode remover ou incluir classes para simular o seu orçamento.</p>
     <div class="bar"></div>
     <div class="ncl-cards" id="nclCards"></div>
+    <div class="ncl-removed" id="nclRemoved" hidden></div>
+    <div class="ncl-add no-print">
+      <button type="button" class="btn ghost sm" id="nclAddBtn" aria-expanded="false" aria-controls="nclAddPanel">+ Incluir outra classe</button>
+      <div class="ncl-add-panel" id="nclAddPanel" hidden>
+        <input type="search" id="nclAddBusca" placeholder="Buscar classe por número ou ramo (ex.: roupa, software, 41)" aria-label="Buscar classe" />
+        <div class="ncl-add-list" id="nclAddList"></div>
+      </div>
+    </div>
+    <div class="ncl-total" id="nclTotal"></div>
     <p class="ncl-tip rv" id="nclTip" hidden><b>Dica K4:</b> para quem revende, registre a classe do produto + a <b>Classe 35</b> (comércio).</p>
   </div>
 </section>
@@ -326,6 +335,7 @@
       </div>
       <div class="no-print">
         <span class="seg-label" id="cl-label">Nº de classes</span>
+        <a class="cls-resumo" id="clsResumo" href="#classes" hidden></a>
         <div class="seg" role="group" aria-labelledby="cl-label" id="classSeg"></div>
       </div>
     </div>

@@ -465,7 +465,7 @@ section { padding: 96px 0; position: relative; }
 
 .ncl-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
 .ncl-card { display: grid; grid-template-columns: auto 1fr; align-content: start; gap: 6px 20px; background: var(--panel); border-left: 4px solid var(--magenta); padding: 24px; }
-.ncl-card .num { grid-row: span 3; font-family: var(--head); font-weight: 800; font-size: 44px; line-height: 1; color: var(--magenta); min-width: 56px; }
+.ncl-card .num { grid-row: span 4; font-family: var(--head); font-weight: 800; font-size: 44px; line-height: 1; color: var(--magenta); min-width: 56px; }
 .ncl-card small { color: var(--dim); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; }
 .ncl-card h3 { font-size: 20px; }
 .ncl-card p { color: var(--muted); font-size: 14px; }
@@ -517,3 +517,29 @@ section { padding: 96px 0; position: relative; }
 .avulsos-t td:nth-child(3) { font-family: var(--head); font-weight: 700; font-size: 17px; white-space: nowrap; }
 .avulsos-t td:nth-child(4) { color: var(--dim); }
 .ncl-note { margin: 10px 0 4px; padding: 10px 14px; border-radius: 8px; background: rgba(255, 138, 76, .1); color: #ffb48c; font-size: 13px; font-weight: 600; }
+
+/* ---------- Classes editáveis pelo cliente ---------- */
+.ncl-card { position: relative; }
+.ncl-card .rm { grid-column: 2; justify-self: start; margin-top: 10px; background: transparent; border: 1px solid #4a3c55; color: var(--muted); border-radius: 999px; font: 600 12px var(--body); padding: 5px 12px; cursor: pointer; }
+.ncl-card .rm:hover { border-color: var(--coral); color: #fff; }
+.ncl-card .rm:disabled { opacity: .35; cursor: not-allowed; }
+.ncl-card .new { display: inline-block; margin-left: 8px; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; background: #1fae5b; color: #fff; padding: 2px 8px; border-radius: 999px; vertical-align: 1px; }
+.ncl-removed { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 13px; color: var(--dim); }
+.ncl-removed button { background: transparent; border: 1px dashed #5a4d66; color: var(--muted); border-radius: 999px; padding: 5px 12px; font: 600 12px var(--body); cursor: pointer; }
+.ncl-removed button:hover { border-color: var(--magenta); color: #fff; }
+.ncl-add { margin-top: 18px; }
+.ncl-add-panel { margin-top: 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
+.ncl-add-panel input { width: 100%; font: inherit; font-size: 15px; color: var(--text); background: #120c18; border: 1px solid #3a3043; border-radius: 10px; padding: 11px 14px; }
+.ncl-add-panel input:focus { outline: 2px solid var(--magenta); border-color: transparent; }
+.ncl-add-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 6px; margin-top: 12px; max-height: 320px; overflow: auto; }
+.ncl-add-list button { display: flex; gap: 10px; align-items: flex-start; text-align: left; background: #120c18; border: 1px solid transparent; color: var(--text); border-radius: 8px; padding: 9px 12px; font: 500 13px var(--body); cursor: pointer; }
+.ncl-add-list button:hover { border-color: var(--magenta); }
+.ncl-add-list button b { font-family: var(--head); color: var(--magenta); min-width: 22px; }
+.ncl-add-list button small { display: block; color: var(--dim); font-size: 12px; margin-top: 2px; }
+.ncl-add-list .empty { color: var(--dim); font-size: 13px; padding: 8px; }
+.ncl-total { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center; justify-content: space-between; background: rgba(224, 24, 92, .1); border: 1px solid rgba(224, 24, 92, .35); border-radius: 14px; padding: 16px 20px; font-size: 15px; }
+.ncl-total b { font-family: var(--head); font-size: 18px; }
+.ncl-total a { color: #ff8fb0; font-weight: 700; text-decoration: none; white-space: nowrap; }
+.cls-resumo { display: inline-block; background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 10px 18px; font-family: var(--head); font-weight: 600; font-size: 14px; text-decoration: none; }
+.cls-resumo span { color: #ff8fb0; margin-left: 6px; }
+.prog-table.static tbody tr { cursor: default; }

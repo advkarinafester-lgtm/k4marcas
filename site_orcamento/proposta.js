@@ -126,8 +126,23 @@
     vEl.textContent = offTxt() + " aplicado nos honorários do plano";
   }
 
-  // classes definidas determinam a quantidade inicial
-  if (state.nc.length) state.classes = Math.min(MAXCL, state.nc.length);
+  // classes definidas determinam a quantidade inicial; o cliente pode incluir/remover
+  if (state.nc.length > MAXCL) state.nc = state.nc.slice(0, MAXCL);
+  state.ncOrig = state.nc.slice();
+  var MODO_CLASSES = state.nc.length > 0;
+  if (MODO_CLASSES) state.classes = state.nc.length;
+  function mesmaLista(a, b) { return a.length === b.length && a.every(function (x, i) { return x === b[i]; }); }
+  function alteracoes() {
+    return {
+      add: state.nc.filter(function (n) { return state.ncOrig.indexOf(n) < 0; }),
+      rem: state.ncOrig.filter(function (n) { return state.nc.indexOf(n) < 0; }),
+    };
+  }
+  function setClasses(arr) {
+    state.nc = arr.filter(function (n, i, a) { return a.indexOf(n) === i; }).sort(function (a, b) { return a - b; });
+    state.classes = state.nc.length;
+    render();
+  }
   function listaClasses(arr) {
     var l = arr.map(String);
     return l.length > 1 ? l.slice(0, -1).join(", ") + " e " + l[l.length - 1] : l[0] || "";
@@ -240,7 +255,7 @@
   }
   $("#progBody").addEventListener("click", function (e) {
     var tr = e.target.closest("tr[data-n]");
-    if (tr) { state.classes = +tr.dataset.n; render(); }
+    if (tr && !MODO_CLASSES) { state.classes = +tr.dataset.n; render(); }
   });
 
   // ---------- pricing ----------
@@ -284,13 +299,25 @@
   (function staticBlocks() {
     var esc = function (t) { var d = document.createElement("div"); d.textContent = t; return d.innerHTML; };
     // classes: o cliente vê somente as classes definidas no gerador
-    if (state.nc.length) {
-      $("#nclCards").innerHTML = state.nc.map(function (n) {
-        var c = CFG.ncl[n - 1];
-        return '<div class="ncl-card rv"><span class="num">' + n + "</span><small>Classe " + n + " · " + (n <= 34 ? "Produtos" : "Serviços") + "</small><h3>" + esc(c.nome) + "</h3><p>" + esc(c.resumo) + "</p></div>";
-      }).join("");
-      setF("nclTitulo", state.nc.length === 1 ? "Classe da sua marca" : "Classes da sua marca");
-      $("#nclTip").hidden = !(state.nc.indexOf(35) >= 0 && state.nc.some(function (n) { return n <= 34; }));
+    if (MODO_CLASSES) {
+      $("#classSeg").hidden = true;
+      $("#clsResumo").hidden = false;
+      $(".prog-table").classList.add("static");
+      // eventos: remover, desfazer, incluir
+      $("#classes").addEventListener("click", function (e) {
+        var b = e.target.closest("[data-act]");
+        if (!b || b.disabled) return;
+        var n = +b.dataset.n;
+        if (b.dataset.act === "rm") setClasses(state.nc.filter(function (x) { return x !== n; }));
+        if (b.dataset.act === "add") { setClasses(state.nc.concat(n)); $("#nclAddBusca").value = ""; renderAddList(); }
+      });
+      $("#nclAddBtn").addEventListener("click", function () {
+        var p = $("#nclAddPanel");
+        p.hidden = !p.hidden;
+        this.setAttribute("aria-expanded", String(!p.hidden));
+        if (!p.hidden) { renderAddList(); $("#nclAddBusca").focus(); }
+      });
+      $("#nclAddBusca").addEventListener("input", renderAddList);
     } else {
       $("#classes").hidden = true;
       $("#navClasses").hidden = true;
@@ -342,6 +369,47 @@
     return state.vig ? { nome: vigPlano(state.vig).nome, valor: f ? f.valor : null } : null;
   }
 
+  // ---------- classes editáveis (modo com classes definidas no gerador) ----------
+  function escH(t) { var d = document.createElement("div"); d.textContent = t; return d.innerHTML; }
+  function renderClasses() {
+    var unica = state.nc.length <= 1;
+    $("#nclCards").innerHTML = state.nc.map(function (n) {
+      var c = CFG.ncl[n - 1];
+      var nova = state.ncOrig.indexOf(n) < 0;
+      return '<div class="ncl-card rv in"><span class="num">' + n + "</span><small>Classe " + n + " · " + (n <= 34 ? "Produtos" : "Serviços") +
+        (nova ? '<span class="new">Incluída por você</span>' : "") + "</small><h3>" + escH(c.nome) + "</h3><p>" + escH(c.resumo) + "</p>" +
+        '<button type="button" class="rm no-print" data-act="rm" data-n="' + n + '"' + (unica ? ' disabled title="A proposta precisa de ao menos 1 classe"' : "") +
+        ' aria-label="Remover classe ' + n + '">Remover</button></div>';
+    }).join("");
+    var rem = alteracoes().rem;
+    var box = $("#nclRemoved");
+    box.hidden = !rem.length;
+    box.innerHTML = rem.length ? "<span>Removidas por você:</span>" + rem.map(function (n) {
+      return '<button type="button" data-act="add" data-n="' + n + '"' + (state.nc.length >= MAXCL ? " disabled" : "") + ">Classe " + n + " · desfazer</button>";
+    }).join("") : "";
+    setF("nclTitulo", state.nc.length === 1 ? "Classe da sua marca" : "Classes da sua marca");
+    $("#nclTip").hidden = !(state.nc.indexOf(35) >= 0 && state.nc.some(function (n) { return n <= 34; }));
+    $("#nclAddBtn").disabled = state.nc.length >= MAXCL;
+    $("#nclAddBtn").textContent = state.nc.length >= MAXCL ? "Limite de " + MAXCL + " classes nesta proposta — fale com a equipe para mais" : "+ Incluir outra classe";
+    if (state.nc.length >= MAXCL) $("#nclAddPanel").hidden = true;
+    if (!$("#nclAddPanel").hidden) renderAddList();
+
+    var r = calc();
+    $("#nclTotal").innerHTML = "<span>Com " + plural(state.nc.length) + " (" + listaClasses(state.nc) + ") no plano " + plan(state.plano).nome + ": <b>" +
+      CFG.parcelas + "x " + brl(r.parcelaFinal) + "</b> · total estimado " + brl(r.total) + "</span>" + '<a href="#resumo">Ver resumo →</a>';
+    $("#clsResumo").innerHTML = escH(plural(state.nc.length) + ": " + listaClasses(state.nc)) + "<span>alterar</span>";
+  }
+  function renderAddList() {
+    var q = $("#nclAddBusca").value.trim().toLowerCase();
+    var itens = CFG.ncl.map(function (c, i) { return { n: i + 1, c: c }; }).filter(function (x) {
+      if (state.nc.indexOf(x.n) >= 0) return false;
+      return !q || (x.n + " " + x.c.nome + " " + x.c.resumo).toLowerCase().indexOf(q) >= 0;
+    });
+    $("#nclAddList").innerHTML = itens.length ? itens.map(function (x) {
+      return '<button type="button" data-act="add" data-n="' + x.n + '"><b>' + x.n + "</b><span>" + escH(x.c.nome) + "<small>" + escH(x.c.resumo) + "</small></span></button>";
+    }).join("") : '<span class="empty">Nenhuma classe encontrada.</span>';
+  }
+
   function render() {
     // segment
     $$("#classSeg button").forEach(function (b) { b.setAttribute("aria-pressed", String(+b.dataset.n === state.classes)); });
@@ -360,11 +428,13 @@
     renderTable();
     renderProg();
     var vig = renderVig();
+    if (MODO_CLASSES) renderClasses();
 
     var r = calc();
     var p = plan(state.plano);
-    var difere = state.nc.length && state.classes !== state.nc.length;
-    setF("classesTxt", state.nc.length ? plural(state.nc.length) + " (" + listaClasses(state.nc) + ")" : plural(state.classes));
+    var alt = alteracoes();
+    var difere = MODO_CLASSES && !mesmaLista(state.nc, state.ncOrig);
+    setF("classesTxt", MODO_CLASSES ? plural(state.nc.length) + " (" + listaClasses(state.nc) + ")" : plural(state.classes));
     setF("progDesc", state.bf ? ", já com os preços " + CFG.campanha.nome + " (1 classe: preço fechado; 2 ou mais: " + CFG.campanha.desconto + "% OFF)" : state.desconto ? ", já com " + offTxt() : "");
     setF("planoNome", (state.recomendado ? plan(state.recomendado) : p).nome);
     var minParcela = Math.min.apply(null, offered.map(function (id) { return parcela(id); }));
@@ -375,10 +445,11 @@
     $("#prio").checked = state.prio;
 
     setS("plano", p.nome);
-    setS("classes", plural(state.classes) + (state.nc.length && !difere ? " — " + listaClasses(state.nc) : ""));
+    setS("classes", plural(state.classes) + (MODO_CLASSES ? " — " + listaClasses(state.nc) : ""));
     $("#nclNote").hidden = !difere;
-    if (difere) $("#nclNote").textContent = "Esta proposta foi montada para " + plural(state.nc.length) + " (" + listaClasses(state.nc) + "). " +
-      (state.classes > state.nc.length ? "As classes adicionais serão definidas com a nossa equipe." : "Fale com a equipe para ajustar quais classes manter.");
+    if (difere) $("#nclNote").textContent = "Você alterou as classes da proposta original (" + listaClasses(state.ncOrig) + ")" +
+      (alt.add.length ? ": incluiu " + listaClasses(alt.add) : "") + (alt.rem.length ? (alt.add.length ? "; removeu " : ": removeu ") + listaClasses(alt.rem) : "") +
+      ". Nossa equipe confirmará a viabilidade das novas classes.";
     setS("honor", CFG.parcelas + "x " + brl(r.pc) + " = " + brl(r.honorCheio));
     $('[data-s-row="desc"]').hidden = !temDesc();
     setS("descLabel", "Desconto " + offTxt() + " nos honorários");
@@ -402,7 +473,8 @@
       state.marca ? "• Marca: " + state.marca : null,
       "• Proposta: " + (state.tipo === "ecom" ? "E-commerce" : "Outros nichos"),
       "• Plano: " + p.nome,
-      "• Classes: " + state.classes + (state.nc.length ? (difere ? " (proposta original: " + listaClasses(state.nc) + ")" : " (" + listaClasses(state.nc) + ")") : ""),
+      "• Classes: " + state.classes + (MODO_CLASSES ? " (" + listaClasses(state.nc) + ")" : ""),
+      difere ? "• Alterei as classes da proposta original (" + listaClasses(state.ncOrig) + ")" + (alt.add.length ? " — incluí " + listaClasses(alt.add) : "") + (alt.rem.length ? " — removi " + listaClasses(alt.rem) : "") : null,
       r.prioHon ? "• Trâmite prioritário: sim (incluso no plano)" : null,
       "• Honorários: " + CFG.parcelas + "x " + brl(r.parcelaFinal) + " (total " + brl(r.honorTotal) + ")" + (temDesc() ? " — " + offTxt() + " no plano" : ""),
       vig ? "• " + vig.nome + ": " + (vig.valor ? brl(vig.valor) + "/mês" : "sob consulta") : null,
