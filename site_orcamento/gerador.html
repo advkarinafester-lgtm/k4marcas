@@ -91,6 +91,10 @@
         <label class="f">Válida até<input name="v" type="date" /></label>
         <label class="f">Consultor(a) responsável<input name="r" placeholder="Ex.: Aline Miranda" /></label>
         <label class="f">WhatsApp do cliente (opcional)<input name="tel" inputmode="tel" placeholder="(11) 99999-9999" /><span class="hint">Para abrir a conversa já com o link.</span></label>
+        <label class="f full">Vigilância de marca (opcional, mensal)
+          <select name="vg" id="vgSel"><option value="">Não incluir (cliente pode escolher na página)</option></select>
+          <span class="hint">Faixa calculada pelo nº de classes (1 classe = 1 processo).</span>
+        </label>
         <div class="f full" id="prioBox">Trâmite prioritário (Portaria INPI 066/2026)
           <div class="checks">
             <label><input type="checkbox" name="pr" checked /> Mostrar como opcional</label>
@@ -146,6 +150,15 @@
     var fx = CAMP.precoFixo1Classe || {};
     document.getElementById("bfHint").textContent = "1 classe: " + CFG.planos.map(function (p) { return p.nome + " 12x " + BRL.format(fx[p.id] || 0); }).join(" · ") + " — 2 ou mais classes: " + CAMP.desconto + "% OFF na tabela.";
   } else { document.getElementById("bfBox").hidden = true; f.bf.checked = false; }
+  var vgSel = document.getElementById("vgSel");
+  (CFG.vigilancia ? CFG.vigilancia.planos : []).forEach(function (v) {
+    var o = document.createElement("option"); o.value = v.id; o.textContent = v.nome; vgSel.appendChild(o);
+  });
+  function vigValor(id, n) {
+    var v = CFG.vigilancia.planos.filter(function (x) { return x.id === id; })[0];
+    for (var i = 0; i < v.faixas.length; i++) if (n <= v.faixas[i].ate) return v.faixas[i].valor;
+    return null;
+  }
   var sel = document.getElementById("planSel");
   var po = document.getElementById("po");
   CFG.planos.forEach(function (p) {
@@ -176,6 +189,7 @@
       d: f.bf.checked ? 0 : Math.min(100, Math.max(0, +f.d.value || 0)), v: f.v.value,
       bf: f.bf.checked ? 1 : 0,
       t: f.t.value,
+      vg: f.vg.value,
       e: new Date().toISOString().slice(0, 10), r: f.r.value.trim(),
       pr: f.pr.checked ? 1 : 0, prOn: f.prOn.checked && f.pr.checked && f.t.value === "ecom" ? 1 : 0,
     };
@@ -213,6 +227,7 @@
       "<div><span>Honorários do plano</span><b>" + BRL.format(parc * CFG.parcelas) + "</b></div>" +
       (prio ? "<div><span>Trâmite prioritário (incluso)</span><b>" + BRL.format(prio) + "</b></div>" : "") +
       "<div><span>Taxas INPI</span><b>" + BRL.format(taxa) + "</b></div>" +
+      (data.vg ? "<div><span>Vigilância (mensal, à parte)</span><b>" + (vigValor(data.vg, data.cl) ? BRL.format(vigValor(data.vg, data.cl)) + "/mês" : "Sob consulta") + "</b></div>" : "") +
       "<div class='t'><span>Total estimado</span><b>" + BRL.format(parc * CFG.parcelas + prio + taxa) + "</b></div>";
 
     try { localStorage.setItem("k4_consultor", data.r || ""); } catch (e) {}

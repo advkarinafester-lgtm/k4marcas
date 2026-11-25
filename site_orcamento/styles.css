@@ -447,3 +447,64 @@ section { padding: 96px 0; position: relative; }
 .news-t { font-family: var(--head); font-weight: 600; font-size: 18px; padding: 20px 22px 6px; line-height: 1.3; }
 .news-l { padding: 0 22px 20px; color: var(--magenta); font-weight: 700; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; }
 @media (max-width: 760px) { .news { grid-template-columns: 1fr; } }
+
+/* ---------- Classes NCL ---------- */
+@media (max-width: 1100px) { .nav-links { display: none; } }
+.ncl { display: grid; grid-template-columns: 3fr 1fr; gap: 28px; margin-top: 8px; }
+.ncl-h { display: block; font-family: var(--head); font-size: 12px; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: var(--magenta); margin-bottom: 14px; }
+.ncl-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.ncl-grid.serv { grid-template-columns: 1fr; }
+.ncl-grid li { display: flex; align-items: center; gap: 12px; background: var(--panel); padding: 10px 14px; font-size: 14px; border-radius: 4px; transition: background .15s; }
+.ncl-grid.serv li { border-left: 3px solid var(--magenta); }
+.ncl-grid li b { font-family: var(--head); color: var(--magenta); min-width: 22px; font-size: 14px; }
+.ncl-grid li:hover { background: #2a1d30; }
+.ncl-tip { margin-top: 24px; padding-top: 16px; border-top: 6px solid #2d2c36; color: var(--muted); font-size: 15px; }
+.ncl-tip b { color: var(--text); }
+@media (max-width: 1000px) { .ncl { grid-template-columns: 1fr; } .ncl-grid { grid-template-columns: repeat(2, 1fr); } .ncl-grid.serv { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .ncl-grid, .ncl-grid.serv { grid-template-columns: 1fr; } }
+
+/* ---------- Monitoramento ---------- */
+.mon { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 56px; align-items: start; }
+.mon .h2 em { color: #a64dff; }
+.defense { display: grid; gap: 14px; }
+.defense > div { background: var(--panel); border-left: 4px solid var(--magenta); padding: 20px 24px; }
+.defense small { color: var(--dim); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; }
+.defense h3 { font-size: 22px; margin: 6px 0 8px; }
+.defense p { color: var(--muted); font-size: 14px; }
+.sub-h { font-size: clamp(26px, 3vw, 36px); margin: 72px 0 10px; }
+.vig-plans { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 28px; }
+.vig-plan { position: relative; background: var(--panel); border: 2px solid var(--line); border-radius: 20px; padding: 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.vig-plan.on { border-color: var(--magenta); }
+.vig-plan .ribbon { position: absolute; top: -12px; right: 22px; background: var(--grad); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; padding: 5px 12px; border-radius: 999px; }
+.vig-plan h3 { grid-column: 1 / -1; font-size: 22px; }
+.vig-plan ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; font-size: 14px; }
+.vig-plan ul li { display: flex; gap: 10px; color: var(--text); }
+.vig-plan ul li::before { content: ""; flex: none; width: 6px; height: 6px; border-radius: 50%; background: var(--magenta); margin-top: 8px; }
+.tiers { display: grid; gap: 8px; align-content: start; }
+.tiers div { display: flex; justify-content: space-between; align-items: center; gap: 10px; background: #120c18; padding: 10px 14px; border-radius: 6px; font-size: 13px; color: var(--muted); border: 1px solid transparent; }
+.tiers div b { font-family: var(--head); font-size: 18px; color: var(--text); white-space: nowrap; }
+.tiers div.cur { border-color: var(--magenta); color: var(--text); }
+.tiers small { color: var(--dim); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; }
+.vig-foot { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 24px; }
+.vig-cond { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.vig-cond li { background: var(--panel); padding: 12px 16px; font-size: 14px; display: flex; gap: 10px; }
+.vig-cond li::before { content: ""; flex: none; width: 6px; height: 6px; border-radius: 50%; background: var(--magenta); margin-top: 8px; }
+.vig-tax { border: 1px solid var(--line); padding: 20px 24px; }
+.vig-tax p { color: var(--muted); font-size: 14px; }
+.vig-seg { display: flex; flex-wrap: wrap; border-radius: 14px; }
+.vig-seg button { flex: 1; border-radius: 10px; }
+@media (max-width: 960px) {
+  .mon { grid-template-columns: 1fr; gap: 32px; }
+  .vig-plans, .vig-foot { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) { .vig-plan { grid-template-columns: 1fr; } .vig-cond { grid-template-columns: 1fr; } }
+
+/* ---------- Avulsos ---------- */
+.avulsos-t { margin-top: 32px; }
+.avulsos-t table { min-width: 760px; }
+.avulsos-t thead th { background: #221828 !important; color: var(--muted); text-align: left; font-size: 12px; letter-spacing: .14em; }
+.avulsos-t td { text-align: left !important; font-size: 14px; }
+.avulsos-t td:first-child { font-weight: 700; font-family: var(--head); }
+.avulsos-t td:nth-child(2) { color: var(--muted); }
+.avulsos-t td:nth-child(3) { font-family: var(--head); font-weight: 700; font-size: 17px; white-space: nowrap; }
+.avulsos-t td:nth-child(4) { color: var(--dim); }

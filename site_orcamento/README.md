@@ -4,7 +4,7 @@ Site estático (HTML/CSS/JS, sem build) baseado na apresentação "Proposta Come
 
 ## Páginas
 - `gerador.html` — **uso interno**. Preencha cliente, marca, classes, plano recomendado,
-  desconto, validade e consultor(a). Gera o link personalizado (1 a 7 classes, com tabela progressiva) e a mensagem pronta para
+  desconto, validade e consultor(a). Gera o link personalizado (1 a 9 classes, com tabela progressiva) e a mensagem pronta para
   enviar pelo WhatsApp.
 - `index.html` — **página que o cliente recebe**. Mostra toda a apresentação (sobre, cases,
   processo INPI, vantagens, resultados, Mercado Livre, investimento, documentos, serviços)
@@ -19,6 +19,11 @@ No gerador, escolha no topo:
   trâmite prioritário.
 
 As seções exclusivas de e-commerce estão marcadas com `data-tipo="ecom"` no `index.html`.
+
+## Seções em todas as propostas
+- Classes de Nice (1 a 45), tabela progressiva até 9 classes, plano de monitoramento
+  (Vigilância Essencial e Completa, mensalidade por faixa de processos) e serviços avulsos.
+- Textos e valores ficam em `config.js` (`ncl`, `vigilancia`, `avulsos`).
 
 ## Campanha (Black Friday)
 Configurada em `config.js` → `campanha`. Vale para os dois formatos:

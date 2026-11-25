@@ -23,20 +23,20 @@ window.K4_CONFIG = {
       id: "start",
       nome: "Start",
       resumo: "O essencial para proteger sua marca com segurança.",
-      parcela: { 1: 137.0, 2: 229.5, 3: 312.66, 4: 386.0, 5: 451.2, 6: 509.0, 7: 561.0 },
+      parcela: { 1: 137.0, 2: 229.5, 3: 312.66, 4: 386.0, 5: 451.2, 6: 509.0, 7: 561.0, 8: 607.0, 9: 649.0 },
     },
     {
       id: "intermediario",
       nome: "Intermediário",
       resumo: "Proteção completa com 1 recurso incluso.",
-      parcela: { 1: 188.0, 2: 315.0, 3: 429.0, 4: 532.0, 5: 624.0, 6: 706.0, 7: 780.0 },
+      parcela: { 1: 188.0, 2: 315.0, 3: 429.0, 4: 532.0, 5: 624.0, 6: 706.0, 7: 780.0, 8: 845.0, 9: 905.0 },
       destaque: "Mais escolhido",
     },
     {
       id: "avancado",
       nome: "Avançado",
       resumo: "Blindagem total + identidade visual da marca.",
-      parcela: { 1: 252.0, 2: 493.41, 3: 701.75, 4: 868.41, 5: 993.41, 6: 1076.75, 7: 1160.08 },
+      parcela: { 1: 252.0, 2: 493.41, 3: 701.75, 4: 868.41, 5: 993.41, 6: 1076.75, 7: 1160.08, 8: 1230.0, 9: 1290.0 },
     },
   ],
 
@@ -65,6 +65,75 @@ window.K4_CONFIG = {
     prazo: "180 a 240 dias após deferimento da prioridade",
     proximasVagas: "Janeiro 2027",
   },
+
+  // Vigilância de marca (plano de monitoramento) — contratação opcional, mensal.
+  // Faixa de preço pelo nº de processos (cada classe = 1 processo no INPI).
+  vigilancia: {
+    planos: [
+      {
+        id: "essencial",
+        nome: "Vigilância Essencial",
+        inclui: [
+          "Radar semanal da RPI",
+          "Vigilância de novos pedidos publicados (oposição)",
+          "Vigilância de marcas concedidas (PAN)",
+          "50% de desconto em manutenção, recursos ou exigências",
+        ],
+        faixas: [ { ate: 2, valor: 89 }, { ate: 5, valor: 119 }, { ate: 10, valor: 168 }, { ate: 20, valor: 237 } ],
+      },
+      {
+        id: "completa",
+        nome: "Vigilância Completa",
+        inclui: [
+          "Área do cliente",
+          "Radar semanal da RPI",
+          "Vigilância de novos pedidos publicados (oposição)",
+          "Vigilância de marcas concedidas (PAN)",
+          "Petições de manifestação, recursos ou exigências inclusas",
+          "50% de desconto em peças processuais",
+          "30% de desconto em ação judicial de nulidade",
+        ],
+        faixas: [ { ate: 2, valor: 229 }, { ate: 5, valor: 278 }, { ate: 10, valor: 330 }, { ate: 20, valor: 450 } ],
+        destaque: "Mais completa",
+      },
+    ],
+    condicoes: [
+      "12 meses a partir do protocolo",
+      "Pagamento por boleto",
+      "Renovação automática",
+      "Cancelamento: 40% sobre o saldo remanescente",
+    ],
+  },
+
+  // Serviços avulsos (honorários; taxas do INPI à parte quando indicado).
+  avulsosValidade: "Válido até dezembro/2026",
+  avulsos: [
+    { nome: "Recurso contra indeferimento", inclui: "Análise do despacho, tese jurídica e protocolo no INPI", valor: 1500, obs: "Não inclui taxa do INPI" },
+    { nome: "Manifestação em exigência", inclui: "Resposta a exigência formal ou técnica do INPI", valor: 890, obs: "Conforme complexidade" },
+    { nome: "Defesa em oposição", inclui: "Elaboração de defesa contra oposição de terceiro", valor: 890, obs: "Por processo" },
+    { nome: "Apresentação de oposição", inclui: "Protocolo de oposição contra marca de terceiro", valor: 1350, obs: "Não inclui taxa" },
+    { nome: "Pedido de nulidade administrativa", inclui: "Análise, elaboração e protocolo de nulidade no INPI", valor: 2200, obs: "Alta complexidade" },
+    { nome: "Defesa em nulidade", inclui: "Defesa contra pedido de nulidade", valor: 2200, obs: "Pode variar conforme volume" },
+    { nome: "Pedido de caducidade", inclui: "Protocolo de caducidade por falta de uso", valor: 1750, obs: "Não inclui taxa" },
+    { nome: "Defesa em caducidade", inclui: "Defesa contra pedido de caducidade", valor: 1750, obs: "Inclui análise de provas" },
+    { nome: "Transferência de titularidade", inclui: "Elaboração de procuração no INPI", valor: 340, obs: "+ taxa" },
+  ],
+
+  // Classificação de Nice (NCL) — descrição resumida de cada classe.
+  ncl: [
+    "Produtos químicos", "Tintas e vernizes", "Cosméticos e produtos de limpeza", "Óleos e combustíveis",
+    "Produtos farmacêuticos", "Metais comuns", "Máquinas e motores", "Ferramentas manuais",
+    "Eletrônicos e software", "Aparelhos médicos", "Iluminação, aquecimento e refrigeração", "Veículos e peças",
+    "Armas e explosivos", "Joias e relógios", "Instrumentos musicais", "Papelaria e impressos",
+    "Borracha e plásticos", "Couro e bolsas", "Construção não metálica", "Móveis e colchões",
+    "Utensílios domésticos", "Cordas, redes e barracas", "Fios e linhas", "Tecidos e roupa de cama",
+    "Vestuário e calçados", "Aviamentos e armarinho", "Tapetes e revestimentos", "Jogos e brinquedos",
+    "Carnes e laticínios", "Café, doces e farinhas", "Produtos agrícolas e animais", "Cervejas e bebidas não alcoólicas",
+    "Bebidas alcoólicas", "Tabaco e artigos para fumantes",
+    "Comércio e publicidade", "Finanças e seguros", "Construção e reparos", "Telecomunicações",
+    "Transporte e logística", "Tratamento de materiais", "Educação e entretenimento", "TI e tecnologia",
+    "Alimentação e hospedagem", "Saúde e beleza", "Jurídico e segurança",
+  ],
 
   // Campanha vigente (vale para todas as propostas: e-commerce e outros nichos).
   // - 1 classe: preço fechado da campanha (precoFixo1Classe);

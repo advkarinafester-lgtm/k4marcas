@@ -64,6 +64,7 @@
     bf: !!(data.bf && CFG.campanha && CFG.campanha.ativa),
     // tipo de proposta: "ecom" (forma 1, e-commerce) ou "geral" (forma 2, outros nichos)
     tipo: data.t === "geral" ? "geral" : "ecom",
+    vig: (CFG.vigilancia && CFG.vigilancia.planos.some(function (v) { return v.id === data.vg; })) ? data.vg : "",
     validade: data.v || "",
     emissao: data.e || todayIso(),
     consultor: String(data.r || "").trim(),
@@ -260,6 +261,71 @@
   // ---------- WhatsApp ----------
   function waLink(text) { return "https://wa.me/" + C.whatsapp + "?text=" + encodeURIComponent(text); }
 
+  // ---------- vigilância de marca ----------
+  var VIG = CFG.vigilancia;
+  function vigPlano(id) { return VIG.planos.filter(function (v) { return v.id === id; })[0]; }
+  function vigFaixa(id, n) {
+    var fx = vigPlano(id).faixas;
+    for (var i = 0; i < fx.length; i++) { if (n <= fx[i].ate) return { valor: fx[i].valor, de: i ? fx[i - 1].ate + 1 : 1, ate: fx[i].ate }; }
+    return null; // acima da última faixa: sob consulta
+  }
+  function faixaTxt(f) { return f.de + " a " + f.ate + " processos"; }
+
+  // conteúdo estático gerado a partir do config.js
+  (function staticBlocks() {
+    var esc = function (t) { var d = document.createElement("div"); d.textContent = t; return d.innerHTML; };
+    var li = function (n) { return "<li><b>" + n + "</b>" + esc(CFG.ncl[n - 1]) + "</li>"; };
+    var prod = "", serv = "";
+    for (var n = 1; n <= 45; n++) { if (n <= 34) prod += li(n); else serv += li(n); }
+    $("#nclProd").innerHTML = prod;
+    $("#nclServ").innerHTML = serv;
+
+    $("#avulsosBody").innerHTML = CFG.avulsos.map(function (a) {
+      return "<tr><td>" + esc(a.nome) + "</td><td>" + esc(a.inclui) + "</td><td>" + brl(a.valor) + "</td><td>" + esc(a.obs) + "</td></tr>";
+    }).join("");
+    setF("avulsosValidade", CFG.avulsosValidade + ". Taxas do INPI pagas diretamente ao órgão.");
+
+    $("#vigCond").innerHTML = VIG.condicoes.map(function (c) { return "<li>" + esc(c) + "</li>"; }).join("");
+
+    var seg = $("#vigSeg");
+    [{ id: "", nome: "Não incluir" }].concat(VIG.planos).forEach(function (v) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.dataset.id = v.id;
+      b.textContent = v.nome.replace("Vigilância ", "");
+      b.addEventListener("click", function () { state.vig = v.id; render(); });
+      seg.appendChild(b);
+    });
+  })();
+
+  function renderVig() {
+    var n = state.classes;
+    $("#vigPlans").innerHTML = VIG.planos.map(function (v) {
+      var cur = vigFaixa(v.id, n);
+      return '<div class="vig-plan rv in' + (state.vig === v.id ? " on" : "") + '">' +
+        (v.destaque ? '<span class="ribbon">' + v.destaque + "</span>" : "") +
+        "<h3>" + v.nome + "</h3>" +
+        "<ul>" + v.inclui.map(function (i) { return "<li>" + i + "</li>"; }).join("") + "</ul>" +
+        '<div class="tiers"><small>Mensalidade</small>' + v.faixas.map(function (f, i) {
+          var de = i ? v.faixas[i - 1].ate + 1 : 1;
+          var on = cur && cur.ate === f.ate;
+          return '<div class="' + (on ? "cur" : "") + '"><span>' + de + " a " + f.ate + " processos</span><b>" + brl(f.valor) + "</b></div>";
+        }).join("") + "</div></div>";
+    }).join("");
+
+    $$("#vigSeg button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.id === state.vig)); });
+    var f = state.vig ? vigFaixa(state.vig, n) : null;
+    setF("vigProc", plural(n).replace("classe", "processo"));
+    setF("vigValor", state.vig ? (f ? brl(f.valor) + "/mês" : "Sob consulta") : "Não incluída");
+    var row = $('[data-s-row="vig"]');
+    row.hidden = !state.vig;
+    if (state.vig) {
+      setS("vigLabel", vigPlano(state.vig).nome + " (mensal, à parte)");
+      setS("vig", f ? brl(f.valor) + "/mês" : "Sob consulta");
+    }
+    return state.vig ? { nome: vigPlano(state.vig).nome, valor: f ? f.valor : null } : null;
+  }
+
   function render() {
     // segment
     $$("#classSeg button").forEach(function (b) { b.setAttribute("aria-pressed", String(+b.dataset.n === state.classes)); });
@@ -277,6 +343,7 @@
     });
     renderTable();
     renderProg();
+    var vig = renderVig();
 
     var r = calc();
     var p = plan(state.plano);
@@ -318,6 +385,7 @@
       "• Classes: " + state.classes,
       r.prioHon ? "• Trâmite prioritário: sim (incluso no plano)" : null,
       "• Honorários: " + CFG.parcelas + "x " + brl(r.parcelaFinal) + " (total " + brl(r.honorTotal) + ")" + (temDesc() ? " — " + offTxt() + " no plano" : ""),
+      vig ? "• " + vig.nome + ": " + (vig.valor ? brl(vig.valor) + "/mês" : "sob consulta") : null,
       "• Taxas INPI estimadas: " + brl(r.taxa) + (r.taxaPrio ? " (pedido " + brl(r.taxaBase) + " + prioritário " + brl(r.taxaPrio) + ")" : ""),
       state.validade ? "• Proposta válida até " + fmtDate(state.validade) : null,
       "",

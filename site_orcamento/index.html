@@ -33,7 +33,9 @@
       <a href="#sobre">Sobre</a>
       <a href="#processo">Processo INPI</a>
       <a href="#vantagens" data-tipo="ecom">Vantagens</a>
+      <a href="#classes">Classes</a>
       <a href="#investimento">Investimento</a>
+      <a href="#monitoramento">Monitoramento</a>
       <a href="#documentos">Documentos</a>
     </div>
     <a class="btn sm" href="#investimento">Ver investimento</a>
@@ -231,7 +233,7 @@
       <div class="asset-grid">
         <div class="asset-card rv"><span class="cls">CLASSE 25</span><h3>E-commerce de Moda</h3><small>Valor de mercado estimado</small><b>R$ 25.000+</b></div>
         <div class="asset-card rv"><span class="cls">CLASSE 09</span><h3>Tecnologia &amp; Gadgets</h3><small>Valor de mercado estimado</small><b>R$ 60.000+</b></div>
-        <div class="asset-card rv"><span class="cls">CLASSE 28</span><h3>Utensílios domésticos</h3><small>Valor de mercado estimado</small><b>R$ 40.000+</b></div>
+        <div class="asset-card rv"><span class="cls">CLASSE 21</span><h3>Utensílios domésticos</h3><small>Valor de mercado estimado</small><b>R$ 40.000+</b></div>
         <div class="asset-card rv"><span class="cls">CLASSE 41</span><h3>Infoprodutos Digitais</h3><small>Valor de mercado estimado</small><b>R$ 30.000+</b></div>
       </div>
       <p class="note">Valores estimados com base em mercado para marcas consolidadas.</p>
@@ -301,6 +303,21 @@
   </div>
 </section>
 
+<!-- CLASSES NCL -->
+<section class="z" id="classes">
+  <div class="wrap">
+    <span class="eyebrow">Classificação de Nice (NCL)</span>
+    <h2 class="h2 rv">Classes de 1 a 45</h2>
+    <p class="lead rv" style="margin-top:14px">A marca é protegida dentro de cada classe registrada. São 34 classes de produtos e 11 de serviços.</p>
+    <div class="bar"></div>
+    <div class="ncl">
+      <div><span class="ncl-h">Produtos · classes 1 a 34</span><ol class="ncl-grid" id="nclProd"></ol></div>
+      <div><span class="ncl-h">Serviços · classes 35 a 45</span><ol class="ncl-grid serv" id="nclServ"></ol></div>
+    </div>
+    <p class="ncl-tip rv"><b>Dica K4:</b> para quem revende, registre a classe do produto + a <b>Classe 35</b> (comércio).</p>
+  </div>
+</section>
+
 <!-- INVESTIMENTO -->
 <section class="z" id="investimento">
   <div class="wrap">
@@ -353,6 +370,19 @@
       </div>
     </div>
 
+    <div class="addon vig-addon" id="vigAddon">
+      <div class="addon-info">
+        <span class="eyebrow">Opcional · Plano de monitoramento</span>
+        <h3>Vigilância de marca</h3>
+        <p>Acompanhamos semanalmente a RPI para identificar pedidos e marcas que conflitam com a sua. Mensalidade à parte, por faixa de processos (<b data-f="vigProc"></b>). Detalhes logo abaixo.</p>
+      </div>
+      <div class="addon-ctl">
+        <span class="seg-label">Incluir no resumo</span>
+        <div class="seg vig-seg" role="group" aria-label="Vigilância de marca" id="vigSeg"></div>
+        <div class="line"><span>Mensalidade</span><b data-f="vigValor">—</b></div>
+      </div>
+    </div>
+
     <div class="summary" id="resumo">
       <div class="summary-rows">
         <h3>Resumo da sua proposta</h3>
@@ -365,6 +395,7 @@
         <div class="srow"><span data-s="taxaLabel">Taxas INPI (pagas ao órgão)</span><b data-s="taxa"></b></div>
         <div class="srow"><span>Total de honorários</span><b data-s="honorTotal"></b></div>
         <div class="srow sum"><span>Investimento total estimado</span><b data-s="total"></b></div>
+        <div class="srow" data-s-row="vig" hidden><span data-s="vigLabel"></span><b data-s="vig"></b></div>
       </div>
       <div class="summary-cta">
         <small>Parcela mensal de honorários</small>
@@ -378,6 +409,54 @@
       </div>
     </div>
     <p class="fineprint" id="fineprint"></p>
+  </div>
+</section>
+
+<!-- MONITORAMENTO -->
+<section class="z" id="monitoramento">
+  <div class="wrap">
+    <div class="mon">
+      <div class="rv">
+        <span class="eyebrow">Plano de monitoramento</span>
+        <h2 class="h2">Proteção <em>contínua</em><br />Vigilância de concorrentes</h2>
+        <div class="bar"></div>
+        <p class="lead">Muitos empresários acreditam que, após a concessão do registro pelo INPI, o trabalho está concluído. Na prática, o registro é apenas o início da proteção da marca.</p>
+        <p class="lead" style="margin-top:14px">O INPI continua recebendo novos pedidos todos os dias, e outras empresas podem tentar registrar nomes iguais ou semelhantes, gerando confusão no mercado e prejudicando a sua marca.</p>
+        <p class="lead" style="margin-top:14px">Por isso, realizamos o monitoramento contínuo da marca, garantindo que o direito concedido seja efetivamente protegido. <b style="color:var(--text)">(Contratação opcional.)</b></p>
+      </div>
+      <div class="rv">
+        <span class="ncl-h">Nossa linha de defesa</span>
+        <div class="defense">
+          <div><small>1 · Pedido conflitante publicado</small><h3>Oposição</h3><p>Prazo de 60 dias após a publicação do pedido (art. 158 da LPI).</p></div>
+          <div><small>2 · Marca conflitante concedida</small><h3>Nulidade administrativa (PAN)</h3><p>Até 180 dias após a concessão (arts. 168 a 172 da LPI).</p></div>
+          <div><small>3 · Marca conflitante concedida</small><h3>Ação judicial de nulidade</h3><p>Arts. 173 a 175 da LPI; caminho mais caro e demorado.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="sub-h rv">Vigilância de marca</h3>
+    <p class="lead rv">Monitoramos os pedidos publicados que conflitam com a sua marca, para apresentar oposição a tempo.</p>
+    <div class="vig-plans" id="vigPlans"></div>
+    <div class="vig-foot">
+      <div><span class="ncl-h">Condições</span><ul class="vig-cond" id="vigCond"></ul></div>
+      <div class="vig-tax"><span class="ncl-h">Taxas federais</span><p>As taxas do INPI (GRU) são sempre pagas diretamente ao órgão, não aos honorários da K4 Marcas.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- AVULSOS -->
+<section class="z" id="avulsos">
+  <div class="wrap">
+    <span class="eyebrow">Valores de serviços avulsos</span>
+    <h2 class="h2 rv">Serviços avulsos</h2>
+    <p class="lead rv" style="margin-top:14px">Caso o seu processo precise de uma etapa extra que não esteja no plano contratado.</p>
+    <div class="compare avulsos-t rv">
+      <table>
+        <thead><tr><th>Serviço</th><th>O que inclui</th><th>Honorários</th><th>Observações</th></tr></thead>
+        <tbody id="avulsosBody"></tbody>
+      </table>
+    </div>
+    <p class="note" data-f="avulsosValidade"></p>
   </div>
 </section>
 
