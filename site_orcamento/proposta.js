@@ -61,6 +61,9 @@
     plano: offered.indexOf(data.p) >= 0 ? data.p : (offered.indexOf("intermediario") >= 0 ? "intermediario" : offered[0]),
     recomendado: offered.indexOf(data.p) >= 0 ? data.p : null,
     desconto: Math.min(100, Math.max(0, parseFloat(data.d) || 0)),
+    bf: !!(data.bf && CFG.campanha && CFG.campanha.ativa),
+    // tipo de proposta: "ecom" (forma 1, e-commerce) ou "geral" (forma 2, outros nichos)
+    tipo: data.t === "geral" ? "geral" : "ecom",
     validade: data.v || "",
     emissao: data.e || todayIso(),
     consultor: String(data.r || "").trim(),
@@ -69,6 +72,10 @@
     obs: String(data.o || "").trim(),
   };
 
+  // texto curto do desconto ("Black Friday" ou "20% OFF")
+  function offTxt() { return state.bf ? CFG.campanha.nome : num(state.desconto).replace(",00", "") + "% OFF"; }
+  function temDesc() { return state.bf || state.desconto > 0; }
+  function precoParcela(id, n) { return window.K4_PARCELA(id, n, { bf: state.bf, d: state.desconto }); }
   function plan(id) { return CFG.planos.filter(function (p) { return p.id === id; })[0]; }
 
   // ---------- static fields ----------
@@ -109,12 +116,22 @@
     } else {
       var dias = Math.round((new Date(state.validade + "T23:59:59") - new Date()) / 864e5);
       vEl.textContent = "Condições válidas até " + fmtDate(state.validade) + (dias <= 7 ? " — faltam " + Math.max(dias, 0) + (dias === 1 ? " dia" : " dias") : "") +
-        (state.desconto ? " · " + num(state.desconto).replace(",00", "") + "% OFF no plano" : "");
+        (temDesc() ? " · " + offTxt() + " nos honorários do plano" : "");
     }
-  } else if (state.desconto) {
+  } else if (temDesc()) {
     vEl.hidden = false;
-    vEl.textContent = num(state.desconto).replace(",00", "") + "% OFF nos honorários do plano aplicado nesta proposta";
+    vEl.textContent = offTxt() + " aplicado nos honorários do plano";
   }
+
+  // ---------- formato da proposta ----------
+  if (state.tipo !== "ecom") { state.ofertaPrio = false; state.prio = false; }
+  $$("[data-tipo]").forEach(function (el) { el.hidden = el.getAttribute("data-tipo") !== state.tipo; });
+  setF("tipoTxt", state.tipo === "ecom" ? " · E-commerce" : "");
+  // alterna o fundo das seções visíveis
+  (function zebra() {
+    var secs = $$("body > section").filter(function (sec) { return !sec.hidden && !sec.classList.contains("band") && !sec.classList.contains("final"); });
+    secs.forEach(function (sec, i) { if (sec.classList.contains("z")) sec.classList.toggle("alt", i % 2 === 1); });
+  })();
 
   if (!state.ofertaPrio) $("#addon").hidden = true;
 
@@ -196,7 +213,7 @@
       var sel = n === state.classes;
       return '<tr data-n="' + n + '"' + (sel ? ' class="on" aria-current="true"' : "") + '><td><b>' + plural(n) + "</b>" + (sel ? '<span class="here">sua escolha</span>' : "") + "</td>" +
         offered.map(function (id) {
-          var pn = plan(id).parcela[n] * (1 - state.desconto / 100);
+          var pn = precoParcela(id, n);
           var e = economia(id, n);
           return '<td class="' + (sel && id === state.plano ? "pick" : "") + '"><span class="pv">' + CFG.parcelas + "x " + num(pn) + "</span>" +
             '<span class="pc">' + brl(pn / n) + "/classe" + (e > 0.005 ? ' <em>−' + Math.round(e * 100) + "%</em>" : "") + "</span></td>";
@@ -206,7 +223,7 @@
     var next = CLASSES.filter(function (n) { return n > state.classes; })[0];
     var txt = "Quanto mais classes você protege, menor o valor por classe: até " + Math.round(best * 100) + "% de economia por classe no plano " + plan(state.plano).nome + " (" + MAXCL + " classes).";
     if (next) {
-      var add = (plan(state.plano).parcela[next] - plan(state.plano).parcela[state.classes]) * (1 - state.desconto / 100);
+      var add = precoParcela(state.plano, next) - precoParcela(state.plano, state.classes);
       txt += " Incluir a " + next + "ª classe custa só +" + CFG.parcelas + "x " + brl(add) + ".";
     }
     $("#progTip").textContent = txt;
@@ -218,11 +235,11 @@
 
   // ---------- pricing ----------
   function parcelaCheia(id) { return plan(id).parcela[state.classes]; }
-  function parcela(id) { return parcelaCheia(id) * (1 - state.desconto / 100); }
+  function parcela(id) { return precoParcela(id, state.classes); }
   // Trâmite prioritário: somado aos honorários do plano e parcelado no mesmo nº de parcelas.
   function prioTotal() {
     var v = CFG.prioritario.honorariosPorClasse * state.classes;
-    return CFG.prioritario.descontoAplica ? v * (1 - state.desconto / 100) : v;
+    return CFG.prioritario.descontoAplica ? v * (1 - (state.bf ? CFG.campanha.desconto : state.desconto) / 100) : v;
   }
 
   function calc() {
@@ -253,7 +270,7 @@
       el.setAttribute("aria-checked", String(sel));
       el.tabIndex = sel ? 0 : -1;
       $("[data-price]", el).textContent = num(parcela(id));
-      $("[data-old]", el).textContent = state.desconto ? CFG.parcelas + "x " + num(parcelaCheia(id)) : "";
+      $("[data-old]", el).textContent = temDesc() ? CFG.parcelas + "x " + num(parcelaCheia(id)) : "";
       $("[data-total]", el).textContent = "Total de honorários: " + brl(parcela(id) * CFG.parcelas) +
         (state.ofertaPrio && state.prio ? " · + trâmite prioritário " + CFG.parcelas + "x " + brl(prioTotal() / CFG.parcelas) : "");
       $("[data-pick]", el).textContent = sel ? "Plano selecionado" : "Selecionar este plano";
@@ -264,7 +281,7 @@
     var r = calc();
     var p = plan(state.plano);
     setF("classesTxt", plural(state.classes));
-    setF("progDesc", state.desconto ? ", já com " + num(state.desconto).replace(",00", "") + "% OFF" : "");
+    setF("progDesc", state.bf ? ", já com os preços " + CFG.campanha.nome + " (1 classe: preço fechado; 2 ou mais: " + CFG.campanha.desconto + "% OFF)" : state.desconto ? ", já com " + offTxt() : "");
     setF("planoNome", (state.recomendado ? plan(state.recomendado) : p).nome);
     var minParcela = Math.min.apply(null, offered.map(function (id) { return parcela(id); }));
     setF("aPartir", brl(state.recomendado ? parcela(state.recomendado) : minParcela));
@@ -276,8 +293,8 @@
     setS("plano", p.nome);
     setS("classes", plural(state.classes));
     setS("honor", CFG.parcelas + "x " + brl(r.pc) + " = " + brl(r.honorCheio));
-    $('[data-s-row="desc"]').hidden = !state.desconto;
-    setS("descLabel", "Desconto " + num(state.desconto).replace(",00", "") + "% nos honorários");
+    $('[data-s-row="desc"]').hidden = !temDesc();
+    setS("descLabel", "Desconto " + offTxt() + " nos honorários");
     setS("desc", "− " + brl(r.desc));
     $('[data-s-row="prio"]').hidden = !r.prioHon;
     setS("prio", CFG.parcelas + "x " + brl(r.prioHon / CFG.parcelas) + " = " + brl(r.prioHon));
@@ -287,7 +304,7 @@
     setS("taxaLabel", r.taxaPrio ? "Taxas INPI: pedido " + brl(r.taxaBase) + " + prioritário " + brl(r.taxaPrio) : "Taxas INPI (pagas ao órgão)");
     $('[data-s="parcelaBig"]').innerHTML = CFG.parcelas + "x " + brl(r.parcelaFinal).replace(/\s/, "&nbsp;") + " <span>/mês</span>";
     setS("parcelaSub", "Plano " + p.nome + (r.prioHon ? " + trâmite prioritário" : "") + " · " + plural(state.classes) +
-      (state.desconto ? " · com " + num(state.desconto).replace(",00", "") + "% OFF no plano" : "") +
+      (temDesc() ? " · " + offTxt() + " no plano" : "") +
       ". Total de honorários: " + brl(r.honorTotal) + ". Taxas do INPI (" + brl(r.taxa) + ") pagas diretamente ao órgão.");
 
     var who = state.cliente ? state.cliente : "";
@@ -296,10 +313,11 @@
       "",
       who ? "• Cliente: " + who : null,
       state.marca ? "• Marca: " + state.marca : null,
+      "• Proposta: " + (state.tipo === "ecom" ? "E-commerce" : "Outros nichos"),
       "• Plano: " + p.nome,
       "• Classes: " + state.classes,
       r.prioHon ? "• Trâmite prioritário: sim (incluso no plano)" : null,
-      "• Honorários: " + CFG.parcelas + "x " + brl(r.parcelaFinal) + " (total " + brl(r.honorTotal) + ")" + (state.desconto ? " — com " + num(state.desconto).replace(",00", "") + "% OFF no plano" : ""),
+      "• Honorários: " + CFG.parcelas + "x " + brl(r.parcelaFinal) + " (total " + brl(r.honorTotal) + ")" + (temDesc() ? " — " + offTxt() + " no plano" : ""),
       "• Taxas INPI estimadas: " + brl(r.taxa) + (r.taxaPrio ? " (pedido " + brl(r.taxaBase) + " + prioritário " + brl(r.taxaPrio) + ")" : ""),
       state.validade ? "• Proposta válida até " + fmtDate(state.validade) : null,
       "",

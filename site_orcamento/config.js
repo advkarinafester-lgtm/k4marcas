@@ -65,4 +65,35 @@ window.K4_CONFIG = {
     prazo: "180 a 240 dias após deferimento da prioridade",
     proximasVagas: "Janeiro 2027",
   },
+
+  // Campanha vigente (vale para todas as propostas: e-commerce e outros nichos).
+  // - 1 classe: preço fechado da campanha (precoFixo1Classe);
+  // - 2 ou mais classes: "desconto" % sobre a tabela progressiva.
+  // Para encerrar a campanha, mude "ativa" para false.
+  campanha: {
+    ativa: true,
+    nome: "Black Friday",
+    desconto: 20,
+    precoFixo1Classe: { start: 99.9, intermediario: 150.4, avancado: 189.9 },
+    chamada: "Fechando em novembro/2026",
+  },
+};
+
+/*
+ * Valor de cada parcela de honorários do plano.
+ *   planoId: "start" | "intermediario" | "avancado"
+ *   n: nº de classes
+ *   opt.bf: true = campanha (ex.: Black Friday); opt.d = desconto % manual (quando sem campanha)
+ */
+window.K4_PARCELA = function (planoId, n, opt) {
+  var CFG = window.K4_CONFIG;
+  var plano = CFG.planos.filter(function (p) { return p.id === planoId; })[0];
+  var cheia = plano.parcela[n];
+  opt = opt || {};
+  var camp = CFG.campanha;
+  if (opt.bf && camp) {
+    if (n === 1 && camp.precoFixo1Classe && camp.precoFixo1Classe[planoId]) return camp.precoFixo1Classe[planoId];
+    return cheia * (1 - camp.desconto / 100);
+  }
+  return cheia * (1 - (opt.d || 0) / 100);
 };

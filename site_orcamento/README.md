@@ -11,6 +11,21 @@ Site estático (HTML/CSS/JS, sem build) baseado na apresentação "Proposta Come
   com simulador de plano × classes, trâmite prioritário opcional, resumo de valores,
   botão "Aceitar proposta pelo WhatsApp" e "Salvar em PDF".
 
+## Dois formatos de proposta
+No gerador, escolha no topo:
+- **E-commerce (forma 1):** apresentação completa, com 7 vantagens, Mercado Livre
+  (gráfico e três camadas) e trâmite prioritário opcional.
+- **Outros nichos (forma 2):** mesma proposta sem as seções de marketplace e sem o
+  trâmite prioritário.
+
+As seções exclusivas de e-commerce estão marcadas com `data-tipo="ecom"` no `index.html`.
+
+## Campanha (Black Friday)
+Configurada em `config.js` → `campanha`. Vale para os dois formatos:
+- 1 classe: preço fechado (Start 12x 99,90 · Intermediário 12x 150,40 · Avançado 12x 189,90);
+- 2 a 7 classes: 20% sobre a tabela progressiva.
+Para encerrar a campanha, mude `ativa` para `false`.
+
 ## Onde alterar preços e contatos
 Tudo em `config.js` (parcelas por plano/classe, itens da tabela, taxa INPI, trâmite
 prioritário, WhatsApp, e-mail etc.).
