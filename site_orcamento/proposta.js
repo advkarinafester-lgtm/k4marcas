@@ -219,21 +219,7 @@
   });
 
   // ---------- comparison table ----------
-  function renderTable() {
-    var head = "<tr><th>Proposta de investimento marca</th>" + offered.map(function (id) {
-      var p = plan(id);
-      return "<th>" + p.nome + "<small>(" + CFG.parcelas + "x " + num(parcela(id) ) + ")</small></th>";
-    }).join("") + "</tr>";
-    $("#cmpHead").innerHTML = head;
-    $("#cmpBody").innerHTML = CFG.itens.map(function (it) {
-      return "<tr><td>" + it.nome + "</td>" + offered.map(function (id) {
-        var v = it[id];
-        if (v === true) return "<td>Sim</td>";
-        if (v === false) return '<td class="neg">Não</td>';
-        return '<td class="neg">' + v + "</td>";
-      }).join("") + "</tr>";
-    }).join("");
-  }
+
 
   // ---------- progressão de desconto por nº de classes ----------
   function economia(id, n) { var p = plan(id).parcela; return 1 - p[n] / (n * p[1]); }
@@ -308,6 +294,7 @@
       $("#classSeg").hidden = true;
       $("#clsResumo").hidden = false;
       $(".prog-table").classList.add("static");
+      $("#progClick").textContent = "Para simular, inclua ou remova classes na seção “Classes da sua marca”.";
       // eventos: remover, desfazer, incluir
       $("#classes").addEventListener("click", function (e) {
         var b = e.target.closest("[data-act]");
@@ -450,7 +437,6 @@
         (state.ofertaPrio && state.prio ? " · + trâmite prioritário " + CFG.parcelas + "x " + brl(prioTotal() / CFG.parcelas) : "");
       $("[data-pick]", el).textContent = sel ? "Plano selecionado" : "Selecionar este plano";
     });
-    renderTable();
     renderProg();
     var vig = renderVig();
     if (MODO_CLASSES) renderClasses();
