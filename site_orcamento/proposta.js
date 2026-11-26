@@ -69,6 +69,8 @@
     vig: (CFG.vigilancia && CFG.vigilancia.planos.some(function (v) { return v.id === data.vg; })) ? data.vg : "",
     // vigilância é opcional (como o trâmite prioritário); o gerador pode não oferecê-la
     vigOferta: !(data.vo === 0 || data.vo === "0"),
+    // serviços avulsos: ocultos por padrão; aparecem só se o gerador marcar
+    avulsos: data.av === 1 || data.av === "1",
     validade: data.v || "",
     emissao: data.e || todayIso(),
     consultor: String(data.r || "").trim(),
@@ -154,6 +156,7 @@
   if (state.tipo !== "ecom") { state.ofertaPrio = false; state.prio = false; }
   $$("[data-tipo]").forEach(function (el) { el.hidden = el.getAttribute("data-tipo") !== state.tipo; });
   setF("tipoTxt", state.tipo === "ecom" ? " · E-commerce" : "");
+  $("#avulsos").hidden = !state.avulsos;
   // alterna o fundo das seções visíveis
   (function zebra() {
     var secs = $$("body > section").filter(function (sec) { return !sec.hidden && !sec.classList.contains("band") && !sec.classList.contains("final"); });

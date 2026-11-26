@@ -113,6 +113,10 @@
         <label class="f">Válida até<input name="v" type="date" /></label>
         <label class="f">Consultor(a) responsável<input name="r" placeholder="Ex.: Aline Miranda" /></label>
         <label class="f">WhatsApp do cliente (opcional)<input name="tel" inputmode="tel" placeholder="(11) 99999-9999" /><span class="hint">Para abrir a conversa já com o link.</span></label>
+        <div class="f full">Serviços avulsos
+          <div class="checks"><label><input type="checkbox" name="av" /> Mostrar a tabela de serviços avulsos na proposta</label></div>
+          <span class="hint">Desmarcado (padrão): a seção não aparece para o cliente.</span>
+        </div>
         <div class="f full">Vigilância de marca — proteção contínua (opcional, mensal)
           <div class="checks">
             <label><input type="checkbox" name="vo" checked /> Mostrar como opcional</label>
@@ -249,6 +253,7 @@
       t: f.t.value,
       vg: f.vo.checked ? f.vg.value : "",
       vo: f.vo.checked ? 1 : 0,
+      av: f.av.checked ? 1 : 0,
       e: new Date().toISOString().slice(0, 10), r: f.r.value.trim(),
       pr: f.pr.checked ? 1 : 0, prOn: f.prOn.checked && f.pr.checked && f.t.value === "ecom" ? 1 : 0,
     };

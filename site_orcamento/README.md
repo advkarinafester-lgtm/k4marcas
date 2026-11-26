@@ -29,6 +29,8 @@ As seções exclusivas de e-commerce estão marcadas com `data-tipo="ecom"` no `
 - A vigilância de marca é opcional, como o trâmite prioritário: o cliente liga a chave
   "Incluir vigilância de marca" ou clica em "Contratar" no plano. No gerador, "Mostrar como
   opcional" (desmarcado = a seção não aparece) e "Já deixar marcado".
+- Serviços avulsos: ocultos por padrão; aparecem só se o gerador marcar "Mostrar a tabela
+  de serviços avulsos na proposta".
 - Textos e valores ficam em `config.js` (`ncl`, `vigilancia`, `avulsos`).
 
 ## Campanha (Black Friday)
