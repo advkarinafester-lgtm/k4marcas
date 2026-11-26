@@ -400,8 +400,12 @@ section { padding: 96px 0; position: relative; }
 
 /* ---------- Serviços ---------- */
 .services { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 44px; }
-.service { background: linear-gradient(180deg, #3d1a18 0%, #42271c 100%); border-radius: 14px; padding: 38px 20px; text-align: center; font-family: var(--head); font-weight: 700; font-size: 18px; }
-@media (max-width: 860px) { .services { grid-template-columns: 1fr 1fr; } .service { font-size: 15px; padding: 28px 14px; } }
+.services-sec { background: #11061e; }
+.services-top { display: flex; justify-content: space-between; gap: 16px; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: #b9b0c4; }
+.services-h { font-family: var(--head); font-weight: 400; font-size: clamp(36px, 5vw, 64px); letter-spacing: -0.01em; margin-top: 44px; }
+.services-sec .services { gap: 28px 56px; margin-top: 56px; }
+.service { background: linear-gradient(180deg, #401221 0%, #402126 100%); border-radius: 14px; min-height: 120px; padding: 24px 20px; display: flex; align-items: center; justify-content: center; text-align: center; font-family: var(--body); font-weight: 700; font-size: 19px; }
+@media (max-width: 860px) { .services, .services-sec .services { grid-template-columns: 1fr 1fr; gap: 14px; } .service { font-size: 15px; padding: 20px 12px; min-height: 96px; } }
 
 /* ---------- Footer ---------- */
 .final { text-align: center; padding: 110px 0 80px; }
