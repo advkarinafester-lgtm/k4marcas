@@ -99,11 +99,11 @@
 
   var C = CFG.contato;
   setF("telefone", C.telefone);
-  setF("instagram", "@" + C.instagram.toUpperCase());
-  setF("site", C.site.toUpperCase());
-  setF("email", C.email.toUpperCase());
+  setF("instagram", "@" + C.instagram);
+  setF("site", C.site);
+  setF("email", C.email);
   setF("endereco", C.endereco);
-  $('[data-href="tel"]').href = "tel:+" + C.whatsapp;
+  $('[data-href="tel"]').href = "https://wa.me/" + C.whatsapp;
   $('[data-href="ig"]').href = "https://instagram.com/" + C.instagram;
   $('[data-href="site"]').href = "https://" + C.site;
   $('[data-href="mail"]').href = "mailto:" + C.email;

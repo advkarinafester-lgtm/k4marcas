@@ -410,12 +410,21 @@ section { padding: 96px 0; position: relative; }
 /* ---------- Footer ---------- */
 .final { text-align: center; padding: 110px 0 80px; }
 .final h2 { font-size: clamp(36px, 6vw, 76px); font-weight: 800; }
-.final-grid { display: grid; grid-template-columns: 1fr; justify-items: center; margin-top: 64px; text-align: left; }
-.final-grid .lg { width: min(340px, 80%); margin: 0 auto; }
-.contacts { list-style: none; margin: 0; padding: 0; display: grid; gap: 22px; }
-.contacts a { display: flex; align-items: center; gap: 18px; text-decoration: none; font-weight: 600; letter-spacing: .04em; font-size: 17px; overflow-wrap: anywhere; }
-.contacts a:hover { color: #ff8fb0; }
-.contacts svg { width: 34px; height: 34px; flex: none; }
+.final-grid { margin-top: 64px; text-align: left; }
+.contacts { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.contacts a { height: 100%; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 16px; padding: 28px 18px; text-decoration: none; background: var(--panel); border: 1px solid var(--line); border-radius: 18px; transition: border-color .2s, transform .2s, background .2s; }
+.contacts a:hover { border-color: var(--magenta); background: #20152b; transform: translateY(-2px); }
+.contacts .ci { width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; background: rgba(224, 24, 92, .12); color: #ff6b93; flex: none; }
+.contacts svg { width: 24px; height: 24px; }
+.contacts .ct { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.contacts small { font-size: 11px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; color: var(--dim); }
+.contacts b { font-family: var(--head); font-weight: 600; font-size: 16px; color: var(--text); overflow-wrap: anywhere; }
+@media (max-width: 960px) { .contacts { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) {
+  .contacts { grid-template-columns: 1fr; gap: 10px; }
+  .contacts a { flex-direction: row; text-align: left; padding: 16px 18px; gap: 16px; }
+  .contacts .ci { width: 44px; height: 44px; }
+}
 .foot { border-top: 1px solid var(--line); padding: 24px 0; color: var(--dim); font-size: 12px; }
 .foot .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 @media (max-width: 760px) { .final-grid { margin-top: 40px; } }
