@@ -558,3 +558,9 @@ section { padding: 96px 0; position: relative; }
 .cls-resumo { display: inline-block; background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 10px 18px; font-family: var(--head); font-weight: 600; font-size: 14px; text-decoration: none; }
 .cls-resumo span { color: #ff8fb0; margin-left: 6px; }
 .prog-table.static tbody tr { cursor: default; }
+
+/* ---------- Serviços: chamada para o site ---------- */
+.services-cta { margin-top: 40px; display: flex; align-items: center; justify-content: space-between; gap: 24px 40px; flex-wrap: wrap; background: linear-gradient(180deg, #401221 0%, #402126 100%); border-radius: 18px; padding: 32px 36px; }
+.services-cta p { color: #e6dbe3; font-size: 17px; max-width: 640px; }
+.services-cta .btn { flex: none; }
+@media (max-width: 600px) { .services-cta { padding: 24px; } .services-cta .btn { width: 100%; } }
