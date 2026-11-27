@@ -410,7 +410,7 @@ section { padding: 96px 0; position: relative; }
 /* ---------- Footer ---------- */
 .final { text-align: center; padding: 110px 0 80px; }
 .final h2 { font-size: clamp(36px, 6vw, 76px); font-weight: 800; }
-.final-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; margin-top: 64px; text-align: left; }
+.final-grid { display: grid; grid-template-columns: 1fr; justify-items: center; margin-top: 64px; text-align: left; }
 .final-grid .lg { width: min(340px, 80%); margin: 0 auto; }
 .contacts { list-style: none; margin: 0; padding: 0; display: grid; gap: 22px; }
 .contacts a { display: flex; align-items: center; gap: 18px; text-decoration: none; font-weight: 600; letter-spacing: .04em; font-size: 17px; overflow-wrap: anywhere; }
@@ -418,7 +418,7 @@ section { padding: 96px 0; position: relative; }
 .contacts svg { width: 34px; height: 34px; flex: none; }
 .foot { border-top: 1px solid var(--line); padding: 24px 0; color: var(--dim); font-size: 12px; }
 .foot .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-@media (max-width: 760px) { .final-grid { grid-template-columns: 1fr; } .contacts { justify-content: center; } }
+@media (max-width: 760px) { .final-grid { margin-top: 40px; } }
 
 /* Floating CTA on mobile */
 .float-cta { position: fixed; left: 16px; right: 16px; bottom: 16px; z-index: 60; display: none; }
